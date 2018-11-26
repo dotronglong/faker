@@ -1,4 +1,5 @@
 # Faker - Simple Fake API Server
+[![Build Status](https://travis-ci.org/dotronglong/faker.svg?branch=master)](https://travis-ci.org/dotronglong/faker)
 
 ## How to use
 
