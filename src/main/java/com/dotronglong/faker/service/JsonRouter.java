@@ -45,37 +45,50 @@ public class JsonRouter implements Router {
         }
 
         for (JsonSpec spec: specs) {
-            JsonSpec.Request.Uri uri = spec.getRequest().getUri();
-            if (!uri.getMethod().equals(request.getMethod())) {
+            if (!spec.getRequest().getMethod().equals(request.getMethod())) {
                 continue;
             }
 
             try {
-                URL url = new URL(request.getRequestURL().toString());
+                URL url = new URL(request.getRequestURL().toString() + "?" + request.getQueryString());
 
-                String scheme = uri.getScheme();
+                String scheme = spec.getRequest().getScheme();
                 if (!Objects.isNull(scheme) && !url.getProtocol().equals(scheme)) {
                     continue;
                 }
 
-                String host = uri.getHost();
+                String host = spec.getRequest().getHost();
                 if (!Objects.isNull(host) && !url.getHost().equals(host)) {
                     continue;
                 }
 
-                int port = uri.getPort();
+                int port = spec.getRequest().getPort();
                 if (port > 0 && port != url.getPort()) {
                     continue;
                 }
 
-                String path = uri.getPath();
+                String path = spec.getRequest().getPath();
                 if (path.isEmpty()) {
                     continue;
                 }
 
-                if (!path.equals(url.getPath())) {
+                String targetPath = url.getPath() + "?" + url.getQuery();
+                if (!path.equals(targetPath)) {
                     Pattern pattern = Pattern.compile(path);
-                    if (!pattern.matcher(url.getPath()).matches()) {
+                    if (!pattern.matcher(targetPath).matches()) {
+                        continue;
+                    }
+                }
+
+                if (!Objects.isNull(spec.getRequest().getHeaders())) {
+                    boolean headersCheck = true;
+                    for (String key: spec.getRequest().getHeaders().keySet()) {
+                        if (Objects.isNull(request.getHeader(key))) {
+                            headersCheck = false;
+                            break;
+                        }
+                    }
+                    if (!headersCheck) {
                         continue;
                     }
                 }

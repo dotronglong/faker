@@ -9,3 +9,20 @@ sh -c "$(curl -sSL https://raw.githubusercontent.com/dotronglong/faker/master/fa
 ```
 
 It will parse source folder and start an application on port 3030
+
+## Write JSON specification
+
+```json
+{
+  "request": {
+    "method": "GET",
+    "path": "/v1/users"
+  },
+  "response": {
+    "body": [
+      { "id": 1, "name": "John" },
+      { "id": 2, "name": "Marry" }
+    ]
+  }
+}
+```

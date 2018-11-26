@@ -20,20 +20,12 @@ public class JsonSpec {
     @Builder
     @AllArgsConstructor
     public static class Request {
-        private Uri uri;
+        private String method;
+        private String scheme;
+        private String host;
+        private int port;
+        private String path;
         private Map<String, String> headers;
-
-        @Getter
-        @Setter
-        @Builder
-        @AllArgsConstructor
-        public static class Uri {
-            private String method;
-            private String scheme;
-            private String host;
-            private int port;
-            private String path;
-        }
     }
 
     @Getter

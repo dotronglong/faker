@@ -1,14 +1,12 @@
 {
   "request": {
-    "uri": {
-      "method": "GET",
-      "path": "/v1/users"
+    "method": "GET",
+    "path": "/v1/users",
+    "headers": {
+      "content-type": "application/json"
     }
   },
   "response": {
-    "headers": {
-      "content-type": "application/json"
-    },
     "body": [
       { "id": 1, "name": "John" },
       { "id": 2, "name": "Marry" }
