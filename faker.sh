@@ -45,4 +45,7 @@ if [[ ! -f "$faker" ]]; then
     curl -SLO https://github.com/dotronglong/faker/releases/download/v$version/faker.jar
 fi
 
-java -jar $faker -Dserver.port=$port -Dfaker.source=$source $javaOptions
+java -Dserver.port=$port \
+     -Dfaker.source=$source \
+     $javaOptions \
+     -jar $faker

@@ -40,6 +40,10 @@ public class JsonRouter implements Router {
 
     @Override
     public Handler match(HttpServletRequest request) {
+        if (Objects.isNull(specs)) {
+            return null;
+        }
+
         for (JsonSpec spec: specs) {
             JsonSpec.Request.Uri uri = spec.getRequest().getUri();
             if (!uri.getMethod().equals(request.getMethod())) {
@@ -101,6 +105,7 @@ public class JsonRouter implements Router {
     private boolean scan(String source) {
         File folder = new File(source);
         if (!folder.exists() || !folder.canRead()) {
+            logger.error("Source folder {} does not exist or not readable.", folder.getAbsolutePath());
             return false;
         }
 
@@ -112,6 +117,7 @@ public class JsonRouter implements Router {
 
             JsonSpec spec = read(file);
             if (Objects.isNull(spec)) {
+                logger.error("Unable to read file {}", file.getAbsolutePath());
                 return false;
             }
             specs.add(spec);
