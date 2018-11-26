@@ -1,10 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "path": "/v1/users",
-    "headers": {
-      "content-type": "application/json"
-    }
+    "path": "/v1/users"
   },
   "response": {
     "body": [
