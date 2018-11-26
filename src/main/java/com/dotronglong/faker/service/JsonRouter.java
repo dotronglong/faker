@@ -50,7 +50,11 @@ public class JsonRouter implements Router {
             }
 
             try {
-                URL url = new URL(request.getRequestURL().toString() + "?" + request.getQueryString());
+                String requestUrlString = request.getRequestURL().toString();
+                if (!Objects.isNull(request.getQueryString())) {
+                    requestUrlString += "?" + request.getQueryString();
+                }
+                URL url = new URL(requestUrlString);
 
                 String scheme = spec.getRequest().getScheme();
                 if (!Objects.isNull(scheme) && !url.getProtocol().equals(scheme)) {
@@ -72,7 +76,10 @@ public class JsonRouter implements Router {
                     continue;
                 }
 
-                String targetPath = url.getPath() + "?" + url.getQuery();
+                String targetPath = url.getPath();
+                if (!Objects.isNull(url.getQuery())) {
+                    targetPath += "?" + url.getQuery();
+                }
                 if (!path.equals(targetPath)) {
                     Pattern pattern = Pattern.compile(path);
                     if (!pattern.matcher(targetPath).matches()) {
