@@ -27,3 +27,7 @@ It will parse source folder and start an application on port 3030
   }
 }
 ```
+
+## Links
+
+* [Documentation](https://github.com/dotronglong/faker/wiki)
