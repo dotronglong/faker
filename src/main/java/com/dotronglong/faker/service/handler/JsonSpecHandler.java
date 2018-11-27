@@ -26,6 +26,17 @@ public class JsonSpecHandler implements Handler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) {
+        JsonSpec.Config config = spec.getConfig();
+        if (!Objects.isNull(config)) {
+            if (config.getDelay() > 0) {
+                try {
+                    Thread.sleep(config.getDelay());
+                } catch (InterruptedException e) {
+                    logger.warn("Unable to sleep in {} ms. Exception: {}", config.getDelay(), e.getMessage());
+                }
+            }
+        }
+
         response.setContentType(CONTENT_JSON_UTF8);
         JsonSpec.Response specResponse = spec.getResponse();
         if (!Objects.isNull(specResponse.getHeaders())) {

@@ -45,7 +45,7 @@ public class JsonRouter implements Router {
         }
 
         for (JsonSpec spec: specs) {
-            if (!spec.getRequest().getMethod().equals(request.getMethod())) {
+            if (!spec.getRequest().getMethod().toUpperCase().equals(request.getMethod())) {
                 continue;
             }
 

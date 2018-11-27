@@ -12,8 +12,17 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 public class JsonSpec {
+    private Config config;
     private Request request;
     private Response response;
+
+    @Getter
+    @Setter
+    @Builder
+    @AllArgsConstructor
+    public static class Config {
+        private int delay; // delay in milliseconds
+    }
 
     @Getter
     @Setter
