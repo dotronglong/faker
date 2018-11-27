@@ -42,6 +42,7 @@ public class JsonSpec {
     @Builder
     @AllArgsConstructor
     public static class Response {
+        int code;
         private Map<String, String> headers;
         private Object body;
     }
