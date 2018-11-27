@@ -37,22 +37,24 @@ public class JsonSpecHandler implements Handler {
             }
         }
 
-        if (spec.getResponse().getCode() > 0) {
-            response.setStatus(spec.getResponse().getCode());
-        }
-
         response.setContentType(CONTENT_JSON_UTF8);
         JsonSpec.Response specResponse = spec.getResponse();
-        if (!Objects.isNull(specResponse.getHeaders())) {
-            specResponse.getHeaders().forEach(response::addHeader);
-        }
+        if (!Objects.isNull(specResponse)) {
+            if (specResponse.getCode() > 0) {
+                response.setStatus(specResponse.getCode());
+            }
 
-        Object body = specResponse.getBody();
-        if (!Objects.isNull(body)) {
-            try {
-                response.getWriter().write(JSON.toJSONString(specResponse.getBody()));
-            } catch (IOException e) {
-                logger.error("Unable to write response's body. Exception: {}", e.getMessage());
+            if (!Objects.isNull(specResponse.getHeaders())) {
+                specResponse.getHeaders().forEach(response::addHeader);
+            }
+
+            Object body = specResponse.getBody();
+            if (!Objects.isNull(body)) {
+                try {
+                    response.getWriter().write(JSON.toJSONString(specResponse.getBody()));
+                } catch (IOException e) {
+                    logger.error("Unable to write response's body. Exception: {}", e.getMessage());
+                }
             }
         }
     }
