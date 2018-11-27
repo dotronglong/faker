@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dotronglong.faker.config.FakerApplicationProperties;
 import com.dotronglong.faker.contract.Handler;
 import com.dotronglong.faker.contract.Router;
+import com.dotronglong.faker.contract.Watcher;
 import com.dotronglong.faker.service.handler.JsonSpecHandler;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -20,22 +21,26 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import static java.nio.file.StandardWatchEventKinds.*;
 
 @Service
 public class JsonRouter implements Router {
     private static final Logger logger = LoggerFactory.getLogger(JsonRouter.class);
     private static final Charset charset = StandardCharsets.UTF_8;
     private FakerApplicationProperties properties;
-    private List<JsonSpec> specs;
+    private Watcher watcher;
+    private ConcurrentMap<String, JsonSpec> specs;
 
     @Autowired
-    public JsonRouter(FakerApplicationProperties properties) {
+    public JsonRouter(FakerApplicationProperties properties, Watcher watcher) {
         this.properties = properties;
+        this.watcher = watcher;
     }
 
     @Override
@@ -44,7 +49,7 @@ public class JsonRouter implements Router {
             return null;
         }
 
-        for (JsonSpec spec: specs) {
+        for (JsonSpec spec: specs.values()) {
             if (!spec.getRequest().getMethod().toUpperCase().equals(request.getMethod())) {
                 continue;
             }
@@ -119,7 +124,28 @@ public class JsonRouter implements Router {
 
         if (!scan(source)) {
             logger.error("Scanning is failed.");
+            return;
         }
+
+        if (properties.isWatch()) {
+            watch(source);
+        }
+    }
+
+    private void watch(String source) {
+        watcher.watch(source, (file, kind) -> {
+            String fileName = file.getFileName().toString();
+            if (kind == ENTRY_MODIFY) {
+                logger.info("Changed on file {}", fileName);
+                specs.remove(fileName);
+                parse(file.toFile());
+            } else if (kind == ENTRY_DELETE) {
+                specs.remove(fileName);
+                logger.info("Removed file {}", fileName);
+            } else if (kind == ENTRY_CREATE) {
+                parse(file.toFile());
+            }
+        });
     }
 
     private boolean scan(String source) {
@@ -129,35 +155,37 @@ public class JsonRouter implements Router {
             return false;
         }
 
-        specs = new ArrayList<>();
+        specs = new ConcurrentHashMap<>();
         for (File file: Objects.requireNonNull(folder.listFiles())) {
-            if (!isValid(file)) {
-                continue;
+            if (!parse(file)) {
+                logger.warn("Unable to parse file {}", file.getName());
             }
-
-            JsonSpec spec = read(file);
-            if (Objects.isNull(spec)) {
-                logger.error("Unable to read file {}", file.getAbsolutePath());
-                return false;
-            }
-            specs.add(spec);
-            logger.info("Parsed file {}", file.getName());
         }
         return true;
     }
 
-    private boolean isValid(File file) {
-        if (file.isDirectory()
-                || !file.exists()
-                || !file.canRead()) {
+    private boolean parse(File file) {
+        if (!isValid(file)) {
+            logger.warn("File {} is not valid", file.getName());
             return false;
         }
 
-        if (!FilenameUtils.getExtension(file.getName()).equals("json")) {
+        JsonSpec spec = read(file);
+        if (Objects.isNull(spec)) {
+            logger.error("Unable to read file {}", file.getAbsolutePath());
             return false;
         }
-
+        specs.putIfAbsent(file.getName(), spec);
+        logger.info("Parsed file {}", file.getName());
         return true;
+    }
+
+    private boolean isValid(File file) {
+        return !file.isDirectory()
+                && file.exists()
+                && file.canRead()
+                && FilenameUtils.getExtension(file.getName()).equals("json")
+                && !specs.containsKey(file.getName());
     }
 
     private JsonSpec read(File file) {

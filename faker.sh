@@ -1,23 +1,28 @@
 #!/usr/bin/env sh
 
 port=3030
-version="1.0.0"
+version="1.1.0"
 source=""
 javaOptions=""
+watch="false"
 
 usage() {
   echo "usage: $0 [arguments]"
   echo ""
   echo "Arguments:"
-  echo "  -v or --version       Specify faker's version"
   echo "  -s or --source        Specify source folder"
   echo "  -p or --port          Specify port to listen"
+  echo "  -w or --watch         Watch source for changes"
+  echo "  -v or --version       Specify faker's version"
   echo "  -j or --java-options  Customize java options"
   echo "  -h or --help          Show help"
 }
 
 while [ "$1" != "" ]; do
   case $1 in
+    -w | --watch )          shift
+                            watch=$1
+                            ;;
     -v | --version )        shift
                             version=$1
                             ;;
@@ -47,5 +52,6 @@ fi
 
 java -Dserver.port=$port \
      -Dfaker.source=$source \
+     -Dfaker.watch=$watch \
      $javaOptions \
      -jar $faker
