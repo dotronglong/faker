@@ -20,8 +20,7 @@ usage() {
 
 while [ "$1" != "" ]; do
   case $1 in
-    -w | --watch )          shift
-                            watch=$1
+    -w | --watch )          watch="true"
                             ;;
     -v | --version )        shift
                             version=$1
@@ -46,7 +45,7 @@ done
 
 faker=$PWD/faker.jar
 if [[ ! -f "$faker" ]]; then
-    echo "Downloading faker ..."
+    echo "Downloading faker $version ..."
     curl -SLO https://github.com/dotronglong/faker/releases/download/v$version/faker.jar
 fi
 
