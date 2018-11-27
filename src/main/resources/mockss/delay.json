@@ -8,7 +8,7 @@
   },
   "response": {
     "body": {
-      "token": "some-token"
+      "token": "some-token-me"
     }
   }
 }

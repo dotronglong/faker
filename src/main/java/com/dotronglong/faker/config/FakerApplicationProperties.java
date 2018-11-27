@@ -11,5 +11,5 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "faker")
 public class FakerApplicationProperties {
     private String source;
-    private String route;
+    private boolean watch;
 }
