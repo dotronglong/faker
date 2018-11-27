@@ -43,4 +43,10 @@ public class JsonRequestTest extends BaseRequestTest {
         System.out.println("Request is executed in " + duration + " ms");
         assertTrue(duration > 500);
     }
+
+    @Test
+    public void testRequestWithResponseCode() throws Exception {
+        mvc.perform(get("/v1/users?name=Marry"))
+                .andExpect(status().isInternalServerError());
+    }
 }

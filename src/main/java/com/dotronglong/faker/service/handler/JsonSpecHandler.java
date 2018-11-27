@@ -37,6 +37,10 @@ public class JsonSpecHandler implements Handler {
             }
         }
 
+        if (spec.getResponse().getCode() > 0) {
+            response.setStatus(spec.getResponse().getCode());
+        }
+
         response.setContentType(CONTENT_JSON_UTF8);
         JsonSpec.Response specResponse = spec.getResponse();
         if (!Objects.isNull(specResponse.getHeaders())) {
