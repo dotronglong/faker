@@ -1,0 +1,14 @@
+{
+  "config": {
+    "delay": 500
+  },
+  "request": {
+    "method": "post",
+    "path": "/v1/auth"
+  },
+  "response": {
+    "body": {
+      "token": "some-token"
+    }
+  }
+}
