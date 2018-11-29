@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 port=3030
-version="1.1.2"
+version="1.1.3"
 source=""
 javaOptions=""
 watch="false"

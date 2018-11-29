@@ -1,6 +1,7 @@
 package com.dotronglong.faker.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.dotronglong.faker.config.FakerApplicationProperties;
 import com.dotronglong.faker.contract.Handler;
 import com.dotronglong.faker.contract.Router;
@@ -198,6 +199,9 @@ public class JsonRouter implements Router {
             }
 
             return JSON.parseObject(jsonString, JsonSpec.class);
+        } catch (JSONException e) {
+            logger.warn("Unable to parse file. Exception: {}", e.getMessage());
+            return null;
         } catch (IOException e) {
             logger.error("Unable to read file. Exception: {}", e.getMessage());
             return null;
