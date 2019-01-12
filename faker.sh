@@ -44,7 +44,7 @@ while [ "$1" != "" ]; do
 done
 
 faker=$PWD/faker.jar
-if [[ ! -f "$faker" ]]; then
+if [ ! -f "$faker" ]; then
     echo "Downloading faker $version ..."
     curl -SLO https://github.com/dotronglong/faker/releases/download/v$version/faker.jar
 fi
