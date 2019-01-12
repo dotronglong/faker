@@ -53,4 +53,4 @@ java -Dserver.port=$port \
      -Dfaker.source=$source \
      -Dfaker.watch=$watch \
      $javaOptions \
-     -jar $faker
+     -jar "$faker"
