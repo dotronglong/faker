@@ -37,3 +37,5 @@ transaction-logs
 .flattened-pom.xml
 secrets.yml
 .gradletaskname
+.vagrant
+*-console.log
