@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,5 +54,27 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 		val entity = restTemplate.postForEntity<String>("/v1/users", null, String)
 		assertThat(entity.statusCode).isEqualTo(HttpStatus.CREATED)
 		assertThat(entity.body).isEqualTo("{\"id\":1,\"name\":\"John\"}")
+	}
+
+	@Test
+	fun testResponseWithCorsEnabled() {
+		val entity = restTemplate.getForEntity<String>("/cors")
+		assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+		assertThat(entity.body).isEqualTo("{}")
+		assertThat(entity.headers.accessControlAllowCredentials).isTrue()
+		assertThat(entity.headers.accessControlAllowOrigin).isEqualTo("*")
+		assertThat(entity.headers.accessControlExposeHeaders).isEqualTo(listOf(
+				"Authorization",
+				"Access-Control-Allow-Origin",
+				"Access-Control-Allow-Credentials"
+		))
+		assertThat(entity.headers.accessControlAllowMethods).isEqualTo(listOf(
+				HttpMethod.GET,
+				HttpMethod.POST,
+				HttpMethod.PUT,
+				HttpMethod.PATCH,
+				HttpMethod.DELETE,
+				HttpMethod.OPTIONS
+		))
 	}
 }

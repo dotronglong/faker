@@ -1,0 +1,13 @@
+{
+  "plugins": {
+    "cors": true
+  },
+  "request": {
+    "method": "get",
+    "path": "/cors"
+  },
+  "response": {
+    "statusCode": 200,
+    "body": {}
+  }
+}

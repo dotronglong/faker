@@ -15,12 +15,15 @@ class JsonResponsePlugin constructor(private val serverHttpResponse: ServerHttpR
         get() = "json"
 
     override fun run(response: MutableResponse, parameters: Any): Mono<Void> {
-        serverHttpResponse.statusCode = HttpStatus.valueOf(response.statusCode)
-        if (!response.headers.containsKey("Content-Type")) {
-            serverHttpResponse.headers.set("Content-Type", CONTENT_JSON_UTF8)
+        return Mono.create { s ->
+            serverHttpResponse.statusCode = HttpStatus.valueOf(response.statusCode)
+            if (!response.headers.containsKey("Content-Type")) {
+                serverHttpResponse.headers.set("Content-Type", CONTENT_JSON_UTF8)
+            }
+            response.headers.forEach { (key, value) -> serverHttpResponse.headers.set(key, value) }
+            val buffer = serverHttpResponse.bufferFactory().wrap(response.body.toByteArray())
+            serverHttpResponse.writeAndFlushWith(Mono.just(Mono.just(buffer))).subscribe()
+            s.success()
         }
-        response.headers.forEach { (key, value) -> serverHttpResponse.headers.set(key, value) }
-        val buffer = serverHttpResponse.bufferFactory().wrap(response.body.toByteArray())
-        return serverHttpResponse.writeAndFlushWith(Mono.just(Mono.just(buffer)))
     }
 }

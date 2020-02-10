@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.dotronglong"
-version = "2.0.2"
+version = "2.0.3"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val developmentOnly by configurations.creating
