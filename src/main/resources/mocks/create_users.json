@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "post",
+    "path": "/v1/users"
+  },
+  "response": {
+    "statusCode": 201,
+    "body": { "id": 1, "name": "John" }
+  }
+}

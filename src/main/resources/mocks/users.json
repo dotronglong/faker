@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/v1/users"
+  },
+  "response": {
+    "body": [
+      { "id": 1, "name": "John" },
+      { "id": 2, "name": "Marry" }
+    ]
+  }
+}

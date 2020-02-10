@@ -30,7 +30,8 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
 
     override fun handle(request: ServerHttpRequest, response: ServerHttpResponse): Mono<Void> {
         return Mono.create { s ->
-            val mutableResponse = MutableResponse(HttpStatus.OK.value(), mapper.writeValueAsString(spec.response.body), HashMap())
+            val statusCode = spec.response.statusCode ?: HttpStatus.OK.value()
+            val mutableResponse = MutableResponse(statusCode, mapper.writeValueAsString(spec.response.body), HashMap())
             val tasks: MutableList<Mono<Void>> = ArrayList()
             if (spec.plugins != null) {
                 for ((name, parameters) in spec.plugins) {
@@ -41,14 +42,18 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
                     }
                 }
             }
+            val reply = JsonResponsePlugin(response).run(mutableResponse, true)
             var completes = tasks.size
-            val done = {
-                if (--completes == 0) {
-                    JsonResponsePlugin(response).run(mutableResponse, true)
-                            .subscribe({}, { e -> logger.error(e.message) }, { s.success() })
+            if (completes > 0) {
+                val done = {
+                    if (--completes == 0) {
+                        reply.subscribe({}, { e -> logger.error(e.message) }, { s.success() })
+                    }
                 }
+                Flux.fromIterable(tasks).subscribe { task -> task.subscribe({}, { e -> logger.error(e.message); done() }, done) }
+            } else {
+                reply.subscribe({}, { e -> logger.error(e.message) }, { s.success() })
             }
-            Flux.fromIterable(tasks).subscribe { task -> task.subscribe({}, { e -> logger.error(e.message); done() }, done) }
         }
     }
 }
