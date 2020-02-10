@@ -3,6 +3,7 @@ package com.dotronglong.faker.service.router
 import com.dotronglong.faker.config.FakerApplicationProperties
 import com.dotronglong.faker.contract.Handler
 import com.dotronglong.faker.contract.Router
+import com.dotronglong.faker.contract.Watcher
 import com.dotronglong.faker.pojo.Spec
 import com.dotronglong.faker.service.handler.JsonSpecHandler
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -19,14 +20,19 @@ import java.net.MalformedURLException
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardWatchEventKinds.*
+import java.nio.file.WatchEvent
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.BiConsumer
 import java.util.regex.Pattern
 import java.util.stream.Stream
 
 
 @Service
 class JsonRouter @Autowired constructor(
-        private val properties: FakerApplicationProperties
+        private val properties: FakerApplicationProperties,
+        private val watcher: Watcher
 ) : Router {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
     private val charset: Charset = StandardCharsets.UTF_8
@@ -40,6 +46,9 @@ class JsonRouter @Autowired constructor(
                 logger.info("Scanning is completed.")
             } else {
                 logger.error("Scanning is failed.")
+            }
+            if (properties.watch) {
+                watch(properties.source)
             }
         } else {
             logger.error("Source is not properly configured.")
@@ -92,7 +101,7 @@ class JsonRouter @Autowired constructor(
 
                 return JsonSpecHandler(spec)
             } catch (e: MalformedURLException) {
-                logger.error("Unable to parse request's URL. Exception: {}", e.message);
+                logger.error("Unable to parse request's URL. Exception: {}", e.message)
             }
         }
 
@@ -159,5 +168,25 @@ class JsonRouter @Autowired constructor(
         }
 
         return null
+    }
+
+    private fun watch(source: String) {
+        watcher.watch(source, BiConsumer { file: Path, kind: WatchEvent.Kind<*> ->
+            val fileName = file.fileName.toString()
+            when {
+                kind === ENTRY_MODIFY -> {
+                    logger.info("Changed on file {}", fileName)
+                    specs.remove(fileName)
+                    parse(file.toFile())
+                }
+                kind === ENTRY_DELETE -> {
+                    specs.remove(fileName)
+                    logger.info("Removed file {}", fileName)
+                }
+                kind === ENTRY_CREATE -> {
+                    parse(file.toFile())
+                }
+            }
+        })
     }
 }
