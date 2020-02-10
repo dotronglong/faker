@@ -14,7 +14,6 @@ class DelayResponsePlugin : Plugin {
     override fun run(response: MutableResponse, parameters: Any): Mono<Void> {
         return Mono.create { s ->
             if (parameters is Int && parameters > 0) {
-                response.body = response.body.replace("me", "you")
                 GlobalScope.launch {
                     delay((parameters).toLong())
                     s.success()
