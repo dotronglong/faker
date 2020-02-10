@@ -3,7 +3,7 @@ $onInit = <<-SCRIPT
 	apt-get install -y openjdk-8-jre-headless
 	mkdir -p /opt/faker
 	FAKER_SERVICE=/etc/init.d/faker
-	cp -f /vagrant/faker.sh $FAKER_SERVICE
+	cp -f /vagrant/faker.service $FAKER_SERVICE
 	chown root:root $FAKER_SERVICE
 	chmod 755 $FAKER_SERVICE
 	update-rc.d -f faker remove

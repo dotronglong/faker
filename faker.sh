@@ -1,35 +1,56 @@
-#! /bin/sh
+#!/usr/bin/env sh
 
-### BEGIN INIT INFO
-# Provides:		        faker
-# Required-Start:
-# Required-Stop:
-# Default-Start:	    2 3 4 5
-# Default-Stop:
-# Short-Description:	Faker server
-### END INIT INFO
+port=3030
+version="2.0.2"
+source=""
+javaOptions=""
+watch="false"
 
-FAKER_NAME=faker
-FAKER_DIR=/opt/faker
-MOCK_DIR=$FAKER_DIR/mocks
-LOG_FILE=$FAKER_DIR/$FAKER_NAME.log
-cd $FAKER_DIR
+usage() {
+  echo "usage: $0 [arguments]"
+  echo ""
+  echo "Arguments:"
+  echo "  -s or --source        Specify source folder"
+  echo "  -p or --port          Specify port to listen"
+  echo "  -w or --watch         Watch source for changes"
+  echo "  -v or --version       Specify faker's version"
+  echo "  -j or --java-options  Customize java options"
+  echo "  -h or --help          Show help"
+}
 
-case "$1" in
-	start)
-		if [ -d "$MOCK_DIR" ]; then
-			echo "$MOCK_DIR found. Starting $FAKER_NAME ..."
-			sh -c "$(curl -H 'cache-control: no-cache' -sSL https://era.li/pS4p76)" -s --source $MOCK_DIR > $LOG_FILE &
-		fi
-		;;
-	stop)
-		ps ax | grep $FAKER_NAME | grep -v grep | awk '{print $1}' | xargs -I $ kill -9 $
-        rm -rf $LOG_FILE
-		exit 0
-		;;
-	*)
-		echo "Usage: $0 start|stop" >&2
-		exit 3
-		;;
-esac
-exit 0
+while [ "$1" != "" ]; do
+  case $1 in
+    -w | --watch )          watch="true"
+                            ;;
+    -v | --version )        shift
+                            version=$1
+                            ;;
+    -p | --port )           shift
+                            port=$1
+                            ;;
+    -s | --source )         shift
+                            source=$1
+                            ;;
+    -j | --java-options )   shift
+                            javaOptions="$javaOptions $1"
+                            ;;
+    -h | --help )           usage
+                            exit 0
+                            ;;
+    * )                     usage
+                            exit 1
+    esac
+    shift
+done
+
+faker=$PWD/faker.jar
+if [ ! -f "$faker" ]; then
+    echo "Downloading faker $version ..."
+    curl -SLO https://github.com/dotronglong/faker/releases/download/v$version/faker.jar
+fi
+
+java -Dserver.port=$port \
+     -Dfaker.source=$source \
+     -Dfaker.watch=$watch \
+     $javaOptions \
+     -jar "$faker"
