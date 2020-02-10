@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class FakerApplication
 
 fun main(args: Array<String>) {
-	runApplication<FakerApplication>(*args)
+    runApplication<FakerApplication>(*args)
 }
