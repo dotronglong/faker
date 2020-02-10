@@ -1,10 +1,10 @@
 {
-  "config": {
+  "plugins": {
     "delay": 500
   },
   "request": {
-    "method": "post",
-    "path": "/v1/auth"
+    "method": "get",
+    "path": "/delay"
   },
   "response": {
     "body": {
