@@ -1,7 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 port=3030
-version="2.0.3"
 source=""
 javaOptions=""
 watch="false"
@@ -13,7 +12,6 @@ usage() {
   echo "  -s or --source        Specify source folder"
   echo "  -p or --port          Specify port to listen"
   echo "  -w or --watch         Watch source for changes"
-  echo "  -v or --version       Specify faker's version"
   echo "  -j or --java-options  Customize java options"
   echo "  -h or --help          Show help"
 }
@@ -21,9 +19,6 @@ usage() {
 while [ "$1" != "" ]; do
   case $1 in
     -w | --watch )          watch="true"
-                            ;;
-    -v | --version )        shift
-                            version=$1
                             ;;
     -p | --port )           shift
                             port=$1
@@ -43,14 +38,20 @@ while [ "$1" != "" ]; do
     shift
 done
 
-faker=$PWD/faker.jar
-if [ ! -f "$faker" ]; then
-    echo "Downloading faker $version ..."
-    curl -SLO https://github.com/dotronglong/faker/releases/download/v$version/faker.jar
+FAKER=~/.bin/faker/faker.jar
+if [[ ! -f "${FAKER}" ]]; then
+  echo "Unable to find any version of faker. Please try to install first."
+  echo "Do you want to install latest version? (y/n)"
+  read install
+  if [[ "$install" == "y" ]]; then
+    bash -c "$(curl -sL https://raw.githubusercontent.com/dotronglong/faker/master/install.sh)"
+  else
+    exit 0
+  fi
 fi
 
 java -Dserver.port=$port \
      -Dfaker.source=$source \
      -Dfaker.watch=$watch \
      $javaOptions \
-     -jar "$faker"
+     -jar "$FAKER"
