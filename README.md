@@ -1,20 +1,21 @@
 # Faker - Simple Fake API Server
 [![Build Status](https://travis-ci.org/dotronglong/faker.svg?branch=master)](https://travis-ci.org/dotronglong/faker)
 
-## How to use
-
-Simply run below code
+## Installation
 
 ```bash
-sh -c "$(curl -sSL https://era.li/pS4p76)" -s --source /path/to/your/source
+bash -c "$(curl -sSL https://raw.githubusercontent.com/dotronglong/faker/master/install.sh)"
 ```
 
-It will parse source folder and start an application on port 3030
+## Getting Started
 
-## Write JSON specification
+Create a folder `mocks` and put below content to file `mocks/users.json`
 
 ```json
 {
+  "plugins": {
+    "cors": true
+  },
   "request": {
     "method": "GET",
     "path": "/v1/users"
@@ -26,6 +27,21 @@ It will parse source folder and start an application on port 3030
     ]
   }
 }
+```
+
+Next, run this command to start faker
+
+```bash
+faker -s ./mocks
+```
+
+It will parse source folder and start an application on port 3030
+
+Use `curl` to test the result
+
+```bash
+curl http://localhost:3030/v1/users
+# [{"id":1,"name":"John"},{"id":2,"name":"Marry"}]
 ```
 
 ## Links
