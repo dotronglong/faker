@@ -43,7 +43,7 @@ if [[ ! -f "$DIR_FAKER/faker.jar" ]]; then
 fi
 
 if [[ ! -f "${FAKER_BIN}" ]]; then
-  curl -o "${FAKER_BIN}" -SLO https://raw.githubusercontent.com/dotronglong/faker/master/faker.sh
+  curl -o "${FAKER_BIN}" -sSLO https://raw.githubusercontent.com/dotronglong/faker/master/faker.sh
   chmod +x "${FAKER_BIN}"
 fi
 
