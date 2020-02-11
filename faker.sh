@@ -44,7 +44,7 @@ if [[ ! -f "${FAKER}" ]]; then
   echo "Do you want to install latest version? (y/n)"
   read install
   if [[ "$install" == "y" ]]; then
-    bash -c "$(curl -L https://raw.githubusercontent.com/dotronglong/faker/master/install.sh)"
+    bash -c "$(curl -sL https://raw.githubusercontent.com/dotronglong/faker/master/install.sh)"
   else
     exit 0
   fi

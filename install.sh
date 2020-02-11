@@ -35,7 +35,7 @@ fi
 
 if [[ ! -f "$FAKER" ]]; then
   echo "Downloading faker $version ..."
-  curl -o "${FAKER}" -SLO "https://github.com/dotronglong/faker/releases/download/v${version}/faker.jar"
+  curl -o "${FAKER}" -#SLO "https://github.com/dotronglong/faker/releases/download/v${version}/faker.jar"
 fi
 
 if [[ ! -f "$DIR_FAKER/faker.jar" ]]; then
