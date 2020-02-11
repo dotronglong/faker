@@ -33,3 +33,7 @@ out/
 
 ### MacOS ###
 .DS_Store
+
+### Vagrant ###
+.vagrant
+*.log
