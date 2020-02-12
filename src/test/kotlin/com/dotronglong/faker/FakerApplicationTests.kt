@@ -102,4 +102,21 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 			}
 		}
 	}
+
+	@Test
+	fun testResponseWithTimestampPluginEnabled() {
+		val entity = restTemplate.getForEntity<Any>("/v1/users?timestamp")
+		assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+		assertThat(entity.body is List<*>).isTrue()
+
+		val items = (entity.body as List<*>)
+		for (item in items) {
+			assertThat(item is Map<*, *>).isTrue()
+			val people = (item as Map<*, *>)
+			if ((people["id"] as Int) == 2) {
+				assertThat(people["created_at"] is Long) // verify created_at is less than or equal current timestamp
+				assertThat(people["created_at"] as Long).isLessThanOrEqualTo(System.currentTimeMillis())
+			}
+		}
+	}
 }
