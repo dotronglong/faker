@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/java/jre-headless:8u192-zulu-alpine
 LABEL maintainer="me@dotronglong.com"
 
-ENV FAKER_VERSION=2.0.3
+ENV FAKER_VERSION=2.0.4
 ENV FAKER_PORT=3030
 ENV APP_DIR=/app
 ENV APP_FILE=${APP_DIR}/faker.jar

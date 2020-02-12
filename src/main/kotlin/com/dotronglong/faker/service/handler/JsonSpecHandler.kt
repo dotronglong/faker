@@ -7,6 +7,7 @@ import com.dotronglong.faker.pojo.Spec
 import com.dotronglong.faker.service.plugin.CorsResponsePlugin
 import com.dotronglong.faker.service.plugin.DelayResponsePlugin
 import com.dotronglong.faker.service.plugin.JsonResponsePlugin
+import com.dotronglong.faker.service.plugin.RandomPlugin
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger
@@ -26,7 +27,8 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
         mapper.registerKotlinModule()
         listOf(
                 DelayResponsePlugin(),
-                CorsResponsePlugin()
+                CorsResponsePlugin(),
+                RandomPlugin()
         ).forEach { plugin -> plugins[plugin.name] = plugin }
     }
 
