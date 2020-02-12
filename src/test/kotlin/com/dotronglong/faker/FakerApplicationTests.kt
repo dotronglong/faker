@@ -9,6 +9,8 @@ import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.RequestEntity
+import java.net.URI
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
@@ -118,5 +120,30 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 				assertThat(people["created_at"] as Long).isLessThanOrEqualTo(System.currentTimeMillis())
 			}
 		}
+	}
+
+	@Test
+	fun testCorsRequest() {
+		val entity = restTemplate.exchange(RequestEntity.options(URI("/cors")).build(), String::class.java)
+		assertThat(entity.headers.accessControlAllowCredentials).isTrue()
+		assertThat(entity.headers.accessControlAllowOrigin).isEqualTo("*")
+		assertThat(entity.headers.accessControlExposeHeaders).isEqualTo(listOf(
+				"Authorization",
+				"Access-Control-Allow-Origin",
+				"Access-Control-Allow-Credentials"
+		))
+		assertThat(entity.headers.accessControlAllowHeaders).isEqualTo(listOf(
+				"Authorization",
+				"Content-Type"
+		))
+		assertThat(entity.headers.accessControlAllowMethods).isEqualTo(listOf(
+				HttpMethod.GET,
+				HttpMethod.POST,
+				HttpMethod.PUT,
+				HttpMethod.PATCH,
+				HttpMethod.DELETE,
+				HttpMethod.OPTIONS
+		))
+		assertThat(entity.headers.accessControlMaxAge).isEqualTo(86400L)
 	}
 }

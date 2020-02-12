@@ -20,7 +20,8 @@ class MainController @Autowired constructor(val router: Router) {
                 RequestMethod.POST,
                 RequestMethod.PUT,
                 RequestMethod.PATCH,
-                RequestMethod.DELETE
+                RequestMethod.DELETE,
+                RequestMethod.OPTIONS
             ]
     )
     fun handle(request: ServerHttpRequest, response: ServerHttpResponse): Mono<Void> {
