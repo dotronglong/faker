@@ -24,7 +24,6 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
         mapper.registerKotlinModule()
         listOf(
                 DelayResponsePlugin(),
-                CorsResponsePlugin(),
                 RandomPlugin(),
                 TimestampPlugin()
         ).forEach { plugin -> plugins[plugin.name] = plugin }

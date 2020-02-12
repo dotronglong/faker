@@ -5,7 +5,6 @@ import com.dotronglong.faker.contract.Handler
 import com.dotronglong.faker.contract.Router
 import com.dotronglong.faker.contract.Watcher
 import com.dotronglong.faker.pojo.Spec
-import com.dotronglong.faker.service.handler.CorsHandler
 import com.dotronglong.faker.service.handler.JsonSpecHandler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpMethod
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Service
 import java.io.File
@@ -29,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
 import java.util.regex.Pattern
 import java.util.stream.Stream
-
 
 @Service
 class JsonRouter @Autowired constructor(
@@ -58,9 +55,6 @@ class JsonRouter @Autowired constructor(
     }
 
     override fun match(request: ServerHttpRequest): Handler? {
-        if (request.method == HttpMethod.OPTIONS) {
-            return CorsHandler()
-        }
         for (spec: Spec in specs.values) {
             if (!request.method!!.matches(spec.request.method.toUpperCase())) {
                 continue
