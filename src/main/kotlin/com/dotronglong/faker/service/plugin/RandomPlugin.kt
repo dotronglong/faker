@@ -8,10 +8,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.io.File
+import java.io.BufferedReader
 import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
+import java.io.InputStreamReader
 import java.util.regex.Pattern
 import java.util.stream.Stream
 import kotlin.random.Random
@@ -176,20 +175,19 @@ class RandomPlugin : Plugin {
         return "$account@$domain.$extension"
     }
 
+    @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun randomName(arguments: Map<String, Any>): String {
         if (names == null) {
-            try {
-                @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-                val file = File(javaClass.classLoader.getResource("names.json").file)
-                val contentBuilder = StringBuilder()
-                val stream: Stream<String> = Files.lines(file.toPath(), StandardCharsets.UTF_8)
-                stream.forEach { s -> contentBuilder.append(s).append("\n") }
-                val json = contentBuilder.toString()
-                if (json.isNotEmpty()) {
-                    names = mapper.readValue<Names>(json)
-                }
-            } catch (e: IOException) {
-                println("Unable to read file names.json")
+            val resource = "names.json"
+            val input = javaClass.classLoader.getResourceAsStream(resource)
+                    ?: throw IOException("Unable to read file $resource")
+            val reader = BufferedReader(InputStreamReader(input))
+            val contentBuilder = StringBuilder()
+            val stream: Stream<String> = reader.lines()
+            stream.forEach { s -> contentBuilder.append(s).append("\n") }
+            val json = contentBuilder.toString()
+            if (json.isNotEmpty()) {
+                names = mapper.readValue<Names>(json)
             }
         }
 
