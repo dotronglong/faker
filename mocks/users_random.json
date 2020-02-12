@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "random": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/v1/users?random"
+  },
+  "response": {
+    "body": [
+      { "id": 1, "name": "#random:string:length=10&symbol=false#" },
+      { "id": 2, "name":  "#random:name:male=true#", "age": "#random:int:min=10&max=100#", "email": "#random:email#" }
+    ]
+  }
+}

@@ -77,4 +77,29 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 				HttpMethod.OPTIONS
 		))
 	}
+
+	@Test
+	fun testResponseWithRandomPluginEnabled() {
+		val entity = restTemplate.getForEntity<Any>("/v1/users?random")
+		assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+		assertThat(entity.body is List<*>).isTrue()
+
+		val items = (entity.body as List<*>)
+		for (item in items) {
+			assertThat(item is Map<*, *>).isTrue()
+			val people = (item as Map<*, *>)
+			if ((people["id"] as Int) == 1) {
+				assertThat(people["name"] is String)
+				assertThat((people["name"] as String).length).isEqualTo(10)
+			} else if ((people["id"] as Int) == 2) {
+				assertThat(people["name"] is String)
+				assertThat((people["name"] as String).isNotEmpty()).isTrue()
+				assertThat(people["age"] is Int)
+				assertThat(people["age"] as Int).isBetween(10, 100)
+				assertThat(people["email"] is String)
+				assertThat((people["email"] as String).isNotEmpty()).isTrue()
+				assertThat((people["email"] as String).indexOf("@")).isGreaterThan(0)
+			}
+		}
+	}
 }
