@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="2.0.4"
+version="latest"
 
 usage() {
   echo "usage: $0 [arguments]"
@@ -24,33 +24,46 @@ while [ "$1" != "" ]; do
     shift
 done
 
-DIR_FAKER=~/.bin/faker
-DIR_INSTALL=$DIR_FAKER/$version
-FAKER=$DIR_INSTALL/faker.jar
-FAKER_BIN=$DIR_FAKER/faker
+# Set default latest version
+if [[ "$version" == "latest" ]]; then
+  version=$(curl --silent "https://api.github.com/repos/dotronglong/faker/releases/latest" |
+                grep '"tag_name":' |
+                sed -E 's/v//g' |
+                sed -E 's/.*"([^"]+)".*/\1/')
+fi
 
+DIR_FAKER=.bin/faker
+DIR_ROOT=$HOME/$DIR_FAKER
+DIR_INSTALL=$DIR_ROOT/$version
+FAKER=$DIR_INSTALL/faker.jar
+FAKER_BIN=$DIR_ROOT/faker
+
+# Create folder if missing
 if [[ ! -d "$DIR_INSTALL" ]]; then
   mkdir -p "$DIR_INSTALL"
 fi
 
+# Download if necessary
 if [[ ! -f "$FAKER" ]]; then
   echo "Downloading faker $version ..."
   curl -o "${FAKER}" -#SLO "https://github.com/dotronglong/faker/releases/download/v${version}/faker.jar"
 fi
 
-if [[ ! -f "$DIR_FAKER/faker.jar" ]]; then
-  ln -s "$FAKER" $DIR_FAKER/faker.jar
-fi
+# Update alias
+rm -rf "$DIR_ROOT/faker.jar"
+ln -s "$FAKER" "$DIR_ROOT/faker.jar"
 
 if [[ ! -f "${FAKER_BIN}" ]]; then
   curl -o "${FAKER_BIN}" -sSLO https://raw.githubusercontent.com/dotronglong/faker/master/faker.sh
   chmod +x "${FAKER_BIN}"
 fi
 
+# Check for environment variable
 check=$(echo $PATH | grep "${DIR_FAKER}")
 if [[ -z "${check}" ]]; then
-  echo "Please add ${DIR_FAKER} to PATH environment variable"
-  echo "export \$PATH=\$PATH:${DIR_FAKER}"
+  echo "Please add \$HOME/${DIR_FAKER} to PATH environment variable"
+  echo "export \$PATH=\$PATH:\$HOME/${DIR_FAKER}"
 fi
 
+# Success
 echo "Use version: $version"
