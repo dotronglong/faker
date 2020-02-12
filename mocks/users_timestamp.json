@@ -1,0 +1,15 @@
+{
+  "plugins": {
+    "timestamp": true
+  },
+  "request": {
+    "method": "GET",
+    "path": "/v1/users?timestamp"
+  },
+  "response": {
+    "body": [
+      { "id": 1, "name": "John" },
+      { "id": 2, "name": "Marry", "created_at": "#timestamp#" }
+    ]
+  }
+}
