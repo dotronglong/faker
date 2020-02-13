@@ -13,9 +13,6 @@ Create a folder `mocks` and put below content to file `mocks/users.json`
 
 ```json
 {
-  "plugins": {
-    "cors": true
-  },
   "request": {
     "method": "GET",
     "path": "/v1/users"
