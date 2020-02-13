@@ -1,10 +1,13 @@
 {
-  "plugins": {
-    "timestamp": true
-  },
+  "plugins": [
+    {
+      "name": "timestamp",
+      "args": { "in": "milliseconds" }
+    }
+  ],
   "request": {
     "method": "GET",
-    "path": "/v1/users?timestamp"
+    "path": "/timestamp"
   },
   "response": {
     "body": [

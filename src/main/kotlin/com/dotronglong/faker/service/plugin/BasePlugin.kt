@@ -1,7 +1,13 @@
 package com.dotronglong.faker.service.plugin
 
 abstract class BasePlugin {
-    protected fun parseArguments(text: String): Map<String, Any> {
+    /**
+     * Parse inline arguments.
+     * Inline Arguments starts and ends with '#'
+     *
+     * Returns a map of arguments
+     */
+    protected fun parseInlineArguments(text: String): Map<String, Any> {
         val arguments = HashMap<String, Any>()
         if (text.isNotEmpty()) {
             val pairs = text.split("&")

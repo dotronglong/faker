@@ -29,7 +29,9 @@ class RandomPlugin : BasePlugin(), Plugin {
     override val name: String
         get() = "random"
 
-    override fun run(response: MutableResponse, parameters: Any): Mono<Void> {
+    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> = run(response)
+
+    override fun run(response: MutableResponse): Mono<Void> {
         return Mono.create { s ->
             try {
                 val body = response.body
@@ -37,7 +39,7 @@ class RandomPlugin : BasePlugin(), Plugin {
                 val matcher = pattern.matcher(body)
                 while (matcher.find()) {
                     val type = matcher.group(1)
-                    val arguments = parseArguments(matcher.group(2))
+                    val arguments = parseInlineArguments(matcher.group(2))
                     val find = matcher.group()
                     when (type) {
                         "string" -> {

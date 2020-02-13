@@ -57,7 +57,7 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun testResponseWithRandomPluginEnabled() {
-        val entity = restTemplate.getForEntity<Any>("/v1/users?random")
+        val entity = restTemplate.getForEntity<Any>("/random")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body is List<*>).isTrue()
 
@@ -82,7 +82,7 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
 
     @Test
     fun testResponseWithTimestampPluginEnabled() {
-        val entity = restTemplate.getForEntity<Any>("/v1/users?timestamp")
+        val entity = restTemplate.getForEntity<Any>("/timestamp")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body is List<*>).isTrue()
 
