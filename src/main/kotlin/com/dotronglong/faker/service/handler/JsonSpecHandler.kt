@@ -4,7 +4,10 @@ import com.dotronglong.faker.contract.Handler
 import com.dotronglong.faker.contract.Plugin
 import com.dotronglong.faker.pojo.MutableResponse
 import com.dotronglong.faker.pojo.Spec
-import com.dotronglong.faker.service.plugin.*
+import com.dotronglong.faker.service.plugin.DelayResponsePlugin
+import com.dotronglong.faker.service.plugin.JsonResponsePlugin
+import com.dotronglong.faker.service.plugin.RandomPlugin
+import com.dotronglong.faker.service.plugin.TimestampPlugin
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger
@@ -17,7 +20,7 @@ import reactor.core.publisher.Mono
 
 class JsonSpecHandler constructor(private val spec: Spec) : Handler {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
-    private val plugins: HashMap<String, Plugin> = HashMap()
+    private val plugins: MutableMap<String, Plugin> = HashMap()
     private val mapper = ObjectMapper()
 
     init {
@@ -35,15 +38,13 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
             val mutableResponse = MutableResponse(statusCode, mapper.writeValueAsString(spec.response.body), HashMap())
             val tasks: MutableList<Mono<Void>> = ArrayList()
             if (spec.plugins != null) {
-                for ((name, parameters) in spec.plugins) {
-                    if (plugins.containsKey(name)) {
-                        if (plugins[name] != null) {
-                            tasks.add(plugins[name]!!.run(mutableResponse, parameters))
-                        }
+                for (plugin in spec.plugins) {
+                    if (plugins.containsKey(plugin.name)) {
+                        tasks.add(plugins[plugin.name]!!.run(mutableResponse, plugin.args))
                     }
                 }
             }
-            val reply = JsonResponsePlugin(response).run(mutableResponse, true)
+            val reply = JsonResponsePlugin(response).run(mutableResponse)
             var completes = tasks.size
             if (completes > 0) {
                 val done = {

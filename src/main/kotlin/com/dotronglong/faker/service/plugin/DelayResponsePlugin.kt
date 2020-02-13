@@ -11,11 +11,12 @@ class DelayResponsePlugin : Plugin {
     override val name: String
         get() = "delay"
 
-    override fun run(response: MutableResponse, parameters: Any): Mono<Void> {
+    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
         return Mono.create { s ->
-            if (parameters is Int && parameters > 0) {
+            val duration = (arguments?.get("duration") as Int?) ?: 0
+            if (duration > 0) {
                 GlobalScope.launch {
-                    delay((parameters).toLong())
+                    delay((duration).toLong())
                     s.success()
                 }
             } else {
