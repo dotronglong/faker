@@ -25,7 +25,8 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
         listOf(
                 DelayResponsePlugin(),
                 RandomPlugin(),
-                TimestampPlugin()
+                TimestampPlugin(),
+                ListPlugin()
         ).forEach { plugin -> plugins[plugin.name] = plugin }
     }
 
