@@ -52,6 +52,7 @@ class JsonRouter @Autowired constructor(
         } else {
             logger.error("Source is not properly configured.")
         }
+        logger.info("Version: {}", properties.version)
     }
 
     override fun match(request: ServerHttpRequest): Handler? {
