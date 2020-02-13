@@ -1,7 +1,7 @@
 package com.dotronglong.faker.pojo
 
 data class Spec(
-        val plugins: Map<String, Any>?,
+        val plugins: List<Plugin>?,
         val request: Request,
         val response: Response
 ) {
@@ -18,5 +18,10 @@ data class Spec(
             var statusCode: Int?,
             var headers: Map<String, String>?,
             var body: Any?
+    )
+
+    data class Plugin(
+            val name: String,
+            val args: Map<String, Any>?
     )
 }

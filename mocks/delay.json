@@ -1,7 +1,10 @@
 {
-  "plugins": {
-    "delay": 500
-  },
+  "plugins": [
+    {
+      "name": "delay",
+      "args": { "duration": 500 }
+    }
+  ],
   "request": {
     "method": "get",
     "path": "/delay"
