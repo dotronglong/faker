@@ -1,14 +1,17 @@
 {
-  "plugins": {
-    "list": {
-      "count": 5,
-      "item": {
-        "name": "John",
-        "age": 35
-      },
-      "field": "data"
+  "plugins": [
+    {
+      "name": "list",
+      "args": {
+        "count": 5,
+        "item": {
+          "name": "John",
+          "age": 35
+        },
+        "field": "data"
+      }
     }
-  },
+  ],
   "request": {
     "method": "GET",
     "path": "/list?field"

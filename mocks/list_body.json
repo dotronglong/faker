@@ -1,13 +1,16 @@
 {
-  "plugins": {
-    "list": {
-      "count": 5,
-      "item": {
-        "name": "John",
-        "age": 35
+  "plugins": [
+    {
+      "name": "list",
+      "args": {
+        "count": 5,
+        "item": {
+          "name": "John",
+          "age": 35
+        }
       }
     }
-  },
+  ],
   "request": {
     "method": "GET",
     "path": "/list?body"

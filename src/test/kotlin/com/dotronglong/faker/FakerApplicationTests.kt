@@ -96,4 +96,39 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
             }
         }
     }
+
+    @Test
+    fun testResponseWithListPluginEnabledWithoutField() {
+        val entity = restTemplate.getForEntity<Any>("/list?body")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is List<*>).isTrue()
+
+        val items = (entity.body as List<*>)
+        assertThat(items.size).isEqualTo(5)
+        for (item in items) {
+            assertThat(item is Map<*, *>).isTrue()
+            val people = (item as Map<*, *>)
+            assertThat(people["name"]).isEqualTo("John")
+            assertThat(people["age"]).isEqualTo(35)
+        }
+    }
+
+    @Test
+    fun testResponseWithListPluginEnabledWithField() {
+        val entity = restTemplate.getForEntity<Any>("/list?field")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+
+        val body = (entity.body as Map<*, *>)
+        assertThat(body.containsKey("data")).isTrue()
+        assertThat(body["data"] is List<*>).isTrue()
+        val items = body["data"] as List<*>
+        assertThat(items.size).isEqualTo(5)
+        for (item in items) {
+            assertThat(item is Map<*, *>).isTrue()
+            val people = (item as Map<*, *>)
+            assertThat(people["name"]).isEqualTo("John")
+            assertThat(people["age"]).isEqualTo(35)
+        }
+    }
 }

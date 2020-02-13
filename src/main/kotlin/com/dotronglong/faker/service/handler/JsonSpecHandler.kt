@@ -4,10 +4,7 @@ import com.dotronglong.faker.contract.Handler
 import com.dotronglong.faker.contract.Plugin
 import com.dotronglong.faker.pojo.MutableResponse
 import com.dotronglong.faker.pojo.Spec
-import com.dotronglong.faker.service.plugin.DelayResponsePlugin
-import com.dotronglong.faker.service.plugin.JsonResponsePlugin
-import com.dotronglong.faker.service.plugin.RandomPlugin
-import com.dotronglong.faker.service.plugin.TimestampPlugin
+import com.dotronglong.faker.service.plugin.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.slf4j.Logger

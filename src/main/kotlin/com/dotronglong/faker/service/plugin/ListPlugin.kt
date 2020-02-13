@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import reactor.core.publisher.Mono
-import java.util.LinkedHashMap
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.set
 
 class ListPlugin : Plugin {
     private val mapper = ObjectMapper()
@@ -24,14 +26,14 @@ class ListPlugin : Plugin {
     override val name: String
         get() = "list"
 
-    override fun run(response: MutableResponse, parameters: Any): Mono<Void> {
+    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
         return Mono.create { s ->
             if (response.body.isEmpty()) {
                 s.error(Exception("Body must not be empty"))
                 return@create
             }
             try {
-                val config = getConfiguration(parameters)
+                val config = getConfiguration(arguments ?: Any())
                 if (config.count <= 0) {
                     s.error(Exception("count must be greater than zero"))
                     return@create
@@ -58,15 +60,14 @@ class ListPlugin : Plugin {
         }
     }
 
-    private fun getConfiguration(parameters: Any) : ListConfiguration {
-        if (parameters !is Map<*, *>) {
+    private fun getConfiguration(arguments: Any): ListConfiguration {
+        if (arguments !is Map<*, *>) {
             throw Exception("Invalid Argument")
         }
-        val config = (parameters as Map<*, *>)
         return ListConfiguration(
-                config["count"] as Int,
-                config["field"] as String?,
-                config["item"] as Any
+                arguments["count"] as Int,
+                arguments["field"] as String?,
+                arguments["item"] as Any
         )
     }
 }
