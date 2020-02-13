@@ -67,7 +67,8 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
             val people = (item as Map<*, *>)
             if ((people["id"] as Int) == 1) {
                 assertThat(people["name"] is String)
-                assertThat((people["name"] as String).length).isEqualTo(10)
+                assertThat((people["name"] as String).length).isGreaterThan(0)
+                assertThat((people["name"] as String).split(" ").size).isEqualTo(5)
             } else if ((people["id"] as Int) == 2) {
                 assertThat(people["name"] is String)
                 assertThat((people["name"] as String).isNotEmpty()).isTrue()

@@ -3,27 +3,18 @@ package com.dotronglong.faker.service.plugin
 import com.dotronglong.faker.contract.Plugin
 import com.dotronglong.faker.pojo.MutableResponse
 import com.dotronglong.faker.pojo.Names
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import com.dotronglong.faker.service.helper.JsonFileReader
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
 import java.util.regex.Pattern
-import java.util.stream.Stream
 import kotlin.random.Random
 
 class RandomPlugin : BasePlugin(), Plugin {
-    private val mapper = ObjectMapper()
+    private val reader = JsonFileReader()
 
     private companion object {
         var names: Names? = null
-    }
-
-    init {
-        mapper.registerKotlinModule()
+        var words: List<String>? = null
     }
 
     override val name: String
@@ -59,6 +50,11 @@ class RandomPlugin : BasePlugin(), Plugin {
 
                         "name" -> {
                             val replace = randomName(arguments)
+                            response.body = response.body.replaceFirst(find, replace)
+                        }
+
+                        "word" -> {
+                            val replace = randomWord(arguments)
                             response.body = response.body.replaceFirst(find, replace)
                         }
                     }
@@ -165,17 +161,7 @@ class RandomPlugin : BasePlugin(), Plugin {
     @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     private fun randomName(arguments: Map<String, Any>): String {
         if (names == null) {
-            val resource = "names.json"
-            val input = javaClass.classLoader.getResourceAsStream(resource)
-                    ?: throw IOException("Unable to read file $resource")
-            val reader = BufferedReader(InputStreamReader(input))
-            val contentBuilder = StringBuilder()
-            val stream: Stream<String> = reader.lines()
-            stream.forEach { s -> contentBuilder.append(s).append("\n") }
-            val json = contentBuilder.toString()
-            if (json.isNotEmpty()) {
-                names = mapper.readValue<Names>(json)
-            }
+            names = reader.read<Names>("names.json")
         }
 
         var male = true
@@ -192,5 +178,22 @@ class RandomPlugin : BasePlugin(), Plugin {
         val lastName = names?.surname?.get(randomIntNumber(0, (names?.surname?.size ?: 1) - 1))
 
         return "$firstName $lastName"
+    }
+
+    private fun randomWord(arguments: Map<String, Any>): String {
+        if (words == null) {
+            words = reader.read<List<String>>("words.json")
+        }
+
+        val count = (arguments["count"] as String).toInt()
+        var text = ""
+        for (i in 1..count) {
+            if (i > 1) {
+                text += " "
+            }
+            text += words!![randomIntNumber(0, words!!.size - 1)]
+        }
+
+        return text
     }
 }
