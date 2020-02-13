@@ -1,0 +1,21 @@
+{
+  "plugins": [
+    {
+      "name": "list",
+      "args": {
+        "count": 5,
+        "item": {
+          "name": "John",
+          "age": 35
+        }
+      }
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "path": "/list?body"
+  },
+  "response": {
+    "body": []
+  }
+}
