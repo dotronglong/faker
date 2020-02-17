@@ -32,11 +32,11 @@ if [[ "$version" == "latest" ]]; then
                 sed -E 's/.*"([^"]+)".*/\1/')
 fi
 
-DIR_FAKER=.bin/faker
+DIR_FAKER=.faker
 DIR_ROOT=$HOME/$DIR_FAKER
 DIR_INSTALL=$DIR_ROOT/$version
 FAKER=$DIR_INSTALL/faker.jar
-FAKER_BIN=$DIR_ROOT/faker
+FAKER_BIN=$DIR_ROOT/fakerio
 
 # Create folder if missing
 if [[ ! -d "$DIR_INSTALL" ]]; then
