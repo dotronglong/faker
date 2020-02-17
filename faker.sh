@@ -38,7 +38,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
-FAKER=~/.bin/faker/faker.jar
+FAKER=~/.faker/faker.jar
 if [[ ! -f "${FAKER}" ]]; then
   echo "Unable to find any version of faker. Please try to install first."
   echo "Do you want to install latest version? (y/n)"
