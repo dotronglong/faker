@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const https = require("https");
-const { exec, execFile } = require("child_process");
+const { execFile } = require("child_process");
 const homedir = require('os').homedir();
 const chalk = require('chalk');
 const cliProgress = require('cli-progress');
 
-const info = (msg) => console.log(chalk.blue(`[INFO] ${msg}`));
+const info = (msg) => console.log(chalk.cyan(`[INFO] ${msg}`));
 const warn = (msg) => console.log(chalk.yellow(`[WARN] ${msg}`));
 const exit = (msg) => process.exit(console.log(chalk.red(`[EXIT] ${msg}`)));
 
@@ -21,16 +21,17 @@ const options = {
 
   /* Faker Options */
   version: "latest",
-  source: __dirname,
+  source: null,
   watch: false,
-  port: 8080
+  port: 3030
 };
 
 async function validate() {
   await isJavaInstalled();
-  if (options.source === "") {
+  if (options.source === null) {
     warn("source is not specified. Use -s or --source to specify source folder");
     warn("current directory will be used as source");
+    options.source = __dirname;
   }
 }
 
