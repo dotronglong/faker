@@ -90,4 +90,7 @@ curl http://localhost:3030/v1/users
 
 ## Links
 
+* [Run with NodeJS](https://github.com/dotronglong/faker/wiki/Getting-Started-%5BNodeJS%5D)
+* [Run with Docker](https://github.com/dotronglong/faker/wiki/Getting-Started-%5BDocker%5D)
+* [Run with Vagrant](https://github.com/dotronglong/faker/wiki/Getting-Started-%5BVagrant%5D)
 * [Documentation](https://github.com/dotronglong/faker/wiki)
