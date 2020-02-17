@@ -42,7 +42,7 @@ Create a folder `mocks` and put below content to file `mocks/users.json`
 Next, run this command to start faker
 
 ```bash
-faker -s ./mocks
+fakerio -s ./mocks
 ```
 
 It will parse source folder and start an application on port 3030
