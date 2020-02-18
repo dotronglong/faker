@@ -19,7 +19,7 @@ class ListPlugin : Plugin {
 
     data class ListConfiguration(
             val count: Int,
-            val field: String?,
+            val prop: String?,
             val item: Any
     )
 
@@ -42,15 +42,30 @@ class ListPlugin : Plugin {
                 for (i in 1..config.count) {
                     list.add(config.item)
                 }
-                if (config.field == null) { /* Whole body will be used */
+                if (config.prop == null) { /* Whole body will be used */
                     response.body = mapper.writeValueAsString(list)
                 } else { /* Only one field will be replaced */
                     val body = mapper.readValue<LinkedHashMap<String, Any>>(response.body)
-                    if (!body.containsKey(config.field)) {
-                        s.error(Exception("${config.field} does not exist in body"))
-                        return@create
+                    val props = config.prop.split(".")
+                    var map = body
+                    @Suppress("UNCHECKED_CAST")
+                    for (i in props.indices) {
+                        val prop = props[i]
+                        if (!map.containsKey(prop)) {
+                            s.error(Exception("$prop does not exist in body"))
+                            return@create
+                        }
+                        if (i == props.size - 1) {
+                            map[prop] = list
+                            break
+                        }
+                        if (map[prop] !is LinkedHashMap<*, *>) {
+                            s.error(Exception("$prop must be an object"))
+                            return@create
+                        }
+                        map = map[prop] as LinkedHashMap<String, Any>
                     }
-                    body[config.field] = list
+
                     response.body = mapper.writeValueAsString(body)
                 }
                 s.success()
@@ -66,7 +81,7 @@ class ListPlugin : Plugin {
         }
         return ListConfiguration(
                 arguments["count"] as Int,
-                arguments["field"] as String?,
+                arguments["prop"] as String?,
                 arguments["item"] as Any
         )
     }
