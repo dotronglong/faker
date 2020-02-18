@@ -20,7 +20,7 @@ const options = {
   install_dir: "",
 
   /* Faker Options */
-  version: "latest",
+  version: "current",
   source: null,
   watch: false,
   port: 3030
@@ -50,16 +50,20 @@ const isJavaInstalled = async () => {
 
 const help = () => {
   console.log("usage: fakerio [-options] [args...]");
-  console.log("  -v | --version    specify faker version");
+  console.log("  -v | --version    specify faker version. Default is current");
   console.log("  -s | --source     path to source folder");
   console.log("  -p | --port       specify port");
   console.log("  -w | --watch      enable source watching");
   console.log("  -h | --help       show usage");
-  console.log("\n\nExample: fakerio -s ./mocks -p 3030 --watch");
+  console.log("  upgrade           upgrade to latest version");
+  console.log("\n\nExample:");
+  console.log("       fakerio -s ./mocks -p 3030");
+  console.log("       fakerio -s ./mocks --watch");
+  console.log("       fakerio upgrade");
   process.exit(0);
 };
 
-const parse = () => {
+const parse = async () => {
   const [, , ...args] = process.argv;
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -83,10 +87,14 @@ const parse = () => {
         options.watch = true;
         break;
 
+      case "upgrade":
+        await upgrade();
+        break;
+
       case "-h":
       case "--help":
         help();
-        return;   
+        break;
 
       default:
         warn(`${args[i]} is not supported`);
@@ -141,6 +149,38 @@ const getLatestVersion = () => {
   });
 };
 
+const getLocalVersion = () => {
+  return new Promise((resolve, reject) => {
+    readInfoFile().then((content) => {
+      if (content === null) {
+        resolve('latest');
+      } else {
+        resolve(content.version);
+      }
+    }).catch(reject);
+  });
+};
+
+const writeInfoFile = (data) => {
+  const file = `${options.dir}/faker.json`;
+  fs.writeFileSync(file, JSON.stringify(data));
+};
+
+const readInfoFile = () => {
+  return new Promise(async (resolve, reject) => {
+    const file = `${options.dir}/faker.json`;
+    if (fs.existsSync(file)) {
+      try {
+        resolve(JSON.parse(fs.readFileSync(file, 'utf8')));
+      } catch (e) {
+        reject(e);
+      }
+    } else {
+      resolve(null);
+    }
+  });
+};
+
 const downloadFaker = () => {
   return new Promise((resolve, reject) => {
     info("downloading faker ...");
@@ -183,9 +223,22 @@ const downloadFile = (url, file) => {
   });
 };
 
+const upgrade = async () => {
+  try {
+    options.version = 'latest';
+    await install();
+    process.exit(0);
+  } catch (e) {
+    exit(e.message);
+  }
+};
+
 const install = () => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (options.version === 'current') {
+        options.version = await getLocalVersion();
+      }
       if (options.version === 'latest') {
         options.version = await getLatestVersion();
       }
@@ -206,6 +259,7 @@ const install = () => {
       options.bin = `${options.install_dir}/faker.jar`;
       if (!fs.existsSync(options.bin)) {
         await downloadFaker();
+        writeInfoFile({ version: options.version });
       }
       resolve();
     } catch (e) {
@@ -236,7 +290,7 @@ const run = () => {
 
 const main = async () => {
   try {
-    parse();
+    await parse();
     await validate();
     await install();
     await run();

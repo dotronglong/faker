@@ -1,7 +1,7 @@
 {
   "name": "fakerio",
-  "version": "2.1.4",
-  "description": "Faker as nodejs binary",
+  "version": "2.1.5",
+  "description": "A runner of Faker application on NodeJS",
   "bin": "cli.js",
   "engines": {
     "node": ">= 8.14.0"
