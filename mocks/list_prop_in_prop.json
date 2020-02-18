@@ -8,17 +8,19 @@
           "name": "John",
           "age": 35
         },
-        "field": "data"
+        "prop": "data.items"
       }
     }
   ],
   "request": {
     "method": "GET",
-    "path": "/list?field"
+    "path": "/list?prop_in_prop"
   },
   "response": {
     "body": {
-      "data": [],
+      "data": {
+        "items": []
+      },
       "pagination": {
         "page": 1,
         "count": 10,

@@ -99,7 +99,7 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @Test
-    fun testResponseWithListPluginEnabledWithoutField() {
+    fun testResponseWithListPluginEnabledWithoutProp() {
         val entity = restTemplate.getForEntity<Any>("/list?body")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body is List<*>).isTrue()
@@ -115,8 +115,8 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @Test
-    fun testResponseWithListPluginEnabledWithField() {
-        val entity = restTemplate.getForEntity<Any>("/list?field")
+    fun testResponseWithListPluginEnabledWithProp() {
+        val entity = restTemplate.getForEntity<Any>("/list?prop")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(entity.body is Map<*, *>).isTrue()
 
@@ -124,6 +124,26 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         assertThat(body.containsKey("data")).isTrue()
         assertThat(body["data"] is List<*>).isTrue()
         val items = body["data"] as List<*>
+        assertThat(items.size).isEqualTo(5)
+        for (item in items) {
+            assertThat(item is Map<*, *>).isTrue()
+            val people = (item as Map<*, *>)
+            assertThat(people["name"]).isEqualTo("John")
+            assertThat(people["age"]).isEqualTo(35)
+        }
+    }
+
+    @Test
+    fun testResponseWithListPluginEnabledWithPropInProp() {
+        val entity = restTemplate.getForEntity<Any>("/list?prop_in_prop")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+
+        val body = (entity.body as Map<*, *>)
+        assertThat(body.containsKey("data")).isTrue()
+        assertThat(body["data"] is Map<*, *>).isTrue()
+        assertThat((body["data"] as Map<*, *>)["items"] is List<*>).isTrue()
+        val items = (body["data"] as Map<*, *>)["items"] as List<*>
         assertThat(items.size).isEqualTo(5)
         for (item in items) {
             assertThat(item is Map<*, *>).isTrue()
