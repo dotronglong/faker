@@ -18,6 +18,12 @@ const options = {
   dir: `${homedir}/.faker`,
   bin: "",
   install_dir: "",
+  actions: [
+    "validate",
+    "install",
+    "run"
+  ],
+  check_for_update: false,
 
   /* Faker Options */
   version: "current",
@@ -28,11 +34,6 @@ const options = {
 
 async function validate() {
   await isJavaInstalled();
-  if (options.source === null) {
-    warn("source is not specified. Use -s or --source to specify source folder");
-    warn("current directory will be used as source");
-    options.source = __dirname;
-  }
 }
 
 const isJavaInstalled = async () => {
@@ -55,15 +56,19 @@ const help = () => {
   console.log("  -p | --port       specify port");
   console.log("  -w | --watch      enable source watching");
   console.log("  -h | --help       show usage");
+  console.log("  version           show current faker version");
+  console.log("  install           install a specific version");
   console.log("  upgrade           upgrade to latest version");
   console.log("\n\nExample:");
   console.log("       fakerio -s ./mocks -p 3030");
   console.log("       fakerio -s ./mocks --watch");
+  console.log("       fakerio install -v 2.1.2");
   console.log("       fakerio upgrade");
+  console.log("       fakerio version");
   process.exit(0);
 };
 
-const parse = async () => {
+const parse = () => {
   const [, , ...args] = process.argv;
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
@@ -87,13 +92,22 @@ const parse = async () => {
         options.watch = true;
         break;
 
-      case "upgrade":
-        await upgrade();
-        break;
-
       case "-h":
       case "--help":
         help();
+        break;
+
+      case "version":
+        options.actions = ["version"];
+        return;
+
+      case "install":
+        options.actions = ["install"];
+        break;
+
+      case "upgrade":
+        options.actions = ["install"];
+        options.version = 'latest';
         break;
 
       default:
@@ -181,6 +195,67 @@ const readInfoFile = () => {
   });
 };
 
+const version = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const version = await getLocalVersion();
+      if (version === 'latest') {
+        info("no installed versions found");
+        info("install latest version: fakerio upgrade");
+      } else {
+        info(`faker: ${version}`);
+      }
+
+      const fakerioCurrentVersion = await getFakerioCurrentVersion();
+      const fakerioLatestVersion = await getFakerioLatestVersion();
+      info(`fakerio: ${fakerioCurrentVersion}`);
+      if (fakerioCurrentVersion !== fakerioLatestVersion && fakerioLatestVersion !== undefined) {
+        info(`fakerio has newer version ${fakerioLatestVersion}`);
+        info(`update fakerio: npm install -g fakerio`);
+      }
+      resolve();
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getFakerioCurrentVersion = () => {
+  return new Promise(async (resolve, reject) => {
+    const cmd = await execFile('npm', ['ls', '-g', '-depth=0', '-json', 'fakerio']);
+    if (cmd.error) {
+      return reject(cmd.error);
+    }
+    let data = '';
+    cmd.stdout.on('data', (output) => {
+      data += output.toString();
+    });
+    cmd.stdout.on('end', () => {
+      const content = JSON.parse(data.trim());
+      if (content.dependencies.fakerio !== undefined) {
+        resolve(content.dependencies.fakerio.version);
+      } else {
+        resolve("missing");
+      }
+    });
+  });
+};
+const getFakerioLatestVersion = () => {
+  return new Promise(async (resolve, reject) => {
+    const cmd = await execFile('npm', ['view', 'fakerio', 'version']);
+    if (cmd.error) {
+      return reject(cmd.error);
+    }
+    let data = '';
+    cmd.stdout.on('data', (output) => {
+      data += output.toString();
+    });
+    cmd.stdout.on('end', () => {
+      resolve(data.trim());
+    });
+  });
+};
+
 const downloadFaker = () => {
   return new Promise((resolve, reject) => {
     info("downloading faker ...");
@@ -223,16 +298,6 @@ const downloadFile = (url, file) => {
   });
 };
 
-const upgrade = async () => {
-  try {
-    options.version = 'latest';
-    await install();
-    process.exit(0);
-  } catch (e) {
-    exit(e.message);
-  }
-};
-
 const install = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -261,6 +326,11 @@ const install = () => {
         await downloadFaker();
         writeInfoFile({ version: options.version });
       }
+
+      if (options.install_only) {
+        process.exit(0);
+      }
+
       resolve();
     } catch (e) {
       warn(`error is occurred, trying to delete ${options.bin}`);
@@ -272,6 +342,12 @@ const install = () => {
 
 const run = () => {
   return new Promise(async (resolve, reject) => {
+    if (options.source === null) {
+      warn("source is not specified. Use -s or --source to specify source folder");
+      warn("current directory will be used as source");
+      options.source = __dirname;
+    }
+
     const cmd = await execFile('java', [
       `-Dfaker.source=${options.source}`,
       `-Dfaker.watch=${options.watch}`,
@@ -290,10 +366,26 @@ const run = () => {
 
 const main = async () => {
   try {
-    await parse();
-    await validate();
-    await install();
-    await run();
+    parse();
+    for (let action of options.actions) {
+      switch (action) {
+        case "version":
+          await version();
+          break;
+
+        case "validate":
+          await validate();
+          break;
+
+        case "install":
+          await install();
+          break;
+
+        case "run":
+          await run();
+          break;
+      }
+    }
   } catch (e) {
     exit(e.message);
   }
