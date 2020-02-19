@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const https = require("https");
-const { execFile } = require("child_process");
+const { exec, execFile } = require("child_process");
 const homedir = require('os').homedir();
 const chalk = require('chalk');
 const cliProgress = require('cli-progress');
@@ -198,20 +198,27 @@ const readInfoFile = () => {
 const version = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const version = await getLocalVersion();
-      if (version === 'latest') {
+      const fakerCurrentVersion = await getLocalVersion();
+      const fakerLatestVersion = await getLatestVersion();
+      if (fakerCurrentVersion === 'latest') {
         info("no installed versions found");
         info("install latest version: fakerio upgrade");
+      } else if (fakerCurrentVersion === fakerLatestVersion) {
+        info(`faker: ${fakerCurrentVersion} (latest)`);
       } else {
-        info(`faker: ${version}`);
+        info(`faker: ${fakerCurrentVersion}`);
+        info(`faker has newer version ${fakerLatestVersion}`);
+        info(`update faker: fakerio upgrade`);
       }
 
       const fakerioCurrentVersion = await getFakerioCurrentVersion();
       const fakerioLatestVersion = await getFakerioLatestVersion();
-      info(`fakerio: ${fakerioCurrentVersion}`);
       if (fakerioCurrentVersion !== fakerioLatestVersion && fakerioLatestVersion !== undefined) {
+        info(`fakerio: ${fakerioCurrentVersion}`);
         info(`fakerio has newer version ${fakerioLatestVersion}`);
         info(`update fakerio: npm install -g fakerio`);
+      } else {
+        info(`fakerio: ${fakerioCurrentVersion} (latest)`);
       }
       resolve();
     } catch (e) {
@@ -222,16 +229,12 @@ const version = () => {
 
 const getFakerioCurrentVersion = () => {
   return new Promise(async (resolve, reject) => {
-    const cmd = await execFile('npm', ['ls', '-g', '-depth=0', '-json', 'fakerio']);
-    if (cmd.error) {
-      return reject(cmd.error);
-    }
-    let data = '';
-    cmd.stdout.on('data', (output) => {
-      data += output.toString();
-    });
-    cmd.stdout.on('end', () => {
-      const content = JSON.parse(data.trim());
+    exec('npm ls -g -depth=0 -json fakerio', (error, stdout) => {
+      if (error) {
+        return reject(error);
+      }
+
+      const content = JSON.parse(stdout.trim());
       if (content.dependencies.fakerio !== undefined) {
         resolve(content.dependencies.fakerio.version);
       } else {
@@ -242,16 +245,12 @@ const getFakerioCurrentVersion = () => {
 };
 const getFakerioLatestVersion = () => {
   return new Promise(async (resolve, reject) => {
-    const cmd = await execFile('npm', ['view', 'fakerio', 'version']);
-    if (cmd.error) {
-      return reject(cmd.error);
-    }
-    let data = '';
-    cmd.stdout.on('data', (output) => {
-      data += output.toString();
-    });
-    cmd.stdout.on('end', () => {
-      resolve(data.trim());
+    exec('npm view fakerio version', (error, stdout) => {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(stdout.trim());
     });
   });
 };
