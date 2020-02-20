@@ -1,0 +1,22 @@
+{
+  "plugins": [
+    {
+      "name": "command",
+      "args": {
+        "cmd": ["java", "Sample"],
+        "dir": "./mocks",
+        "prop": "api-key",
+        "section": "header",
+        "cache": true,
+        "ttl": 60000
+      }
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "path": "/command?header"
+  },
+  "response": {
+    "body": []
+  }
+}

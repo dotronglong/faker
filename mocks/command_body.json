@@ -1,0 +1,26 @@
+{
+  "plugins": [
+    {
+      "name": "command",
+      "args": {
+        "cmd": ["java", "Sample"],
+        "dir": "./mocks",
+        "prop": "signature.api-key",
+        "section": "body",
+        "cache": true,
+        "ttl": 60000
+      }
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "path": "/command?body"
+  },
+  "response": {
+    "body": {
+      "signature": {
+        "api-key": ""
+      }
+    }
+  }
+}
