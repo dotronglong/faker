@@ -2,13 +2,10 @@ package com.dotronglong.faker.service.plugin
 
 import com.dotronglong.faker.contract.Plugin
 import com.dotronglong.faker.pojo.MutableResponse
+import com.dotronglong.faker.service.helper.JsonStringModifier
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import reactor.core.publisher.Mono
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.set
 
 class ListPlugin : Plugin {
     private val mapper = ObjectMapper()
@@ -45,28 +42,8 @@ class ListPlugin : Plugin {
                 if (config.prop == null) { /* Whole body will be used */
                     response.body = mapper.writeValueAsString(list)
                 } else { /* Only one field will be replaced */
-                    val body = mapper.readValue<LinkedHashMap<String, Any>>(response.body)
-                    val props = config.prop.split(".")
-                    var map = body
-                    @Suppress("UNCHECKED_CAST")
-                    for (i in props.indices) {
-                        val prop = props[i]
-                        if (!map.containsKey(prop)) {
-                            s.error(Exception("$prop does not exist in body"))
-                            return@create
-                        }
-                        if (i == props.size - 1) {
-                            map[prop] = list
-                            break
-                        }
-                        if (map[prop] !is LinkedHashMap<*, *>) {
-                            s.error(Exception("$prop must be an object"))
-                            return@create
-                        }
-                        map = map[prop] as LinkedHashMap<String, Any>
-                    }
-
-                    response.body = mapper.writeValueAsString(body)
+                    val replacer = JsonStringModifier(response.body)
+                    response.body = replacer.replace(config.prop, list)
                 }
                 s.success()
             } catch (e: Exception) {

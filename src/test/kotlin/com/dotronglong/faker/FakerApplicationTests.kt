@@ -152,4 +152,39 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
             assertThat(people["age"]).isEqualTo(35)
         }
     }
+
+    @Test
+    fun testResponseWithCommandPluginEnabledWithPropInHeader() {
+        val start = System.currentTimeMillis()
+        var entity = restTemplate.getForEntity<Any>("/command?header")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.headers["api-key"]).isEqualTo(listOf("WsRDyjTKX35OfIRh95fj"))
+        val lap1 = System.currentTimeMillis()
+
+        entity = restTemplate.getForEntity<Any>("/command?header")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.headers["api-key"]).isEqualTo(listOf("WsRDyjTKX35OfIRh95fj"))
+        val lap2 = System.currentTimeMillis()
+
+        // is cache working? speed x2 at least
+        assertThat(lap1 - start).isGreaterThanOrEqualTo((lap2 - lap1) * 2)
+    }
+
+    @Test
+    fun testResponseWithCommandPluginEnabledWithPropInBody() {
+        val start = System.currentTimeMillis()
+        val entity = restTemplate.getForEntity<Any>("/command?body")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+        val body = (entity.body as Map<*, *>)
+        assertThat(body["signature"] is Map<*, *>).isTrue()
+        assertThat((body["signature"] as Map<*, *>)["api-key"]).isEqualTo("WsRDyjTKX35OfIRh95fj")
+        val lap1 = System.currentTimeMillis()
+
+        restTemplate.getForEntity<Any>("/command?body")
+        val lap2 = System.currentTimeMillis()
+
+        // is cache working? speed x2 at least
+        assertThat(lap1 - start).isGreaterThanOrEqualTo((lap2 - lap1) * 2)
+    }
 }
