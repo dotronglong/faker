@@ -57,6 +57,11 @@ class RandomPlugin : BasePlugin(), Plugin {
                             val replace = randomWord(arguments)
                             response.body = response.body.replaceFirst(find, replace)
                         }
+
+                        "bool" -> {
+                            val replace = randomBool()
+                            response.body = response.body.replaceFirst(find, replace)
+                        }
                     }
                 }
                 s.success()
@@ -195,5 +200,11 @@ class RandomPlugin : BasePlugin(), Plugin {
         }
 
         return text
+    }
+
+    private fun randomBool(): String {
+        val min = 1
+        val max = 100
+        return "${randomIntNumber(min, max) % 2 == 0}"
     }
 }

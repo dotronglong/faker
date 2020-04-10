@@ -69,6 +69,7 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
                 assertThat(people["name"] is String)
                 assertThat((people["name"] as String).length).isGreaterThan(0)
                 assertThat((people["name"] as String).split(" ").size).isEqualTo(5)
+                assertThat(people["is_enabled"] is Boolean)
             } else if ((people["id"] as Int) == 2) {
                 assertThat(people["name"] is String)
                 assertThat((people["name"] as String).isNotEmpty()).isTrue()
