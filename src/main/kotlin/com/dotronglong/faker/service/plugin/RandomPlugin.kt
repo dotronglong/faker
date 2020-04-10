@@ -60,7 +60,7 @@ class RandomPlugin : BasePlugin(), Plugin {
 
                         "bool" -> {
                             val replace = randomBool()
-                            response.body = response.body.replaceFirst(find, replace)
+                            response.body = response.body.replaceFirst("\"$find\"", replace)
                         }
                     }
                 }
