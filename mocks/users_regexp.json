@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "^\\/v1\\/users/\\d+$"
+  },
+  "response": {
+    "body": {
+      "id": 1,
+      "name": "John"
+    }
+  }
+}
