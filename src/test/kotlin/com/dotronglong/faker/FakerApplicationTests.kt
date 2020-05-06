@@ -56,6 +56,13 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
     }
 
     @Test
+    fun testResponseWithRegExp() {
+        val entity = restTemplate.getForEntity<String>("/v1/users/6789")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body).isEqualTo("{\"id\":1,\"name\":\"John\"}")
+    }
+
+    @Test
     fun testResponseWithRandomPluginEnabled() {
         val entity = restTemplate.getForEntity<Any>("/random")
         assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
