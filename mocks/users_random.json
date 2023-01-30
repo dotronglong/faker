@@ -8,7 +8,7 @@
   },
   "response": {
     "body": [
-      { "id": 1, "name": "#random:word:count=5#", "is_enabled": "#random:bool#" },
+      { "id": 1, "name": "#random:word:count=5#", "is_enabled": "#random:bool#", "uuid": "#random:uuid#" },
       { "id": 2, "name":  "#random:name:male=true#", "age": "#random:int:min=10&max=100#", "email": "#random:email#" }
     ]
   }

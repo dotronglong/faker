@@ -6,6 +6,7 @@ import com.dotronglong.faker.pojo.Names
 import com.dotronglong.faker.service.helper.JsonFileReader
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.util.UUID
 import java.util.regex.Pattern
 import kotlin.random.Random
 
@@ -61,6 +62,11 @@ class RandomPlugin : BasePlugin(), Plugin {
                         "bool" -> {
                             val replace = randomBool()
                             response.body = response.body.replaceFirst("\"$find\"", replace)
+                        }
+
+                        "uuid" -> {
+                            val replace = randomUUID()
+                            response.body = response.body.replaceFirst(find, replace)
                         }
                     }
                 }
@@ -207,4 +213,6 @@ class RandomPlugin : BasePlugin(), Plugin {
         val max = 100
         return "${randomIntNumber(min, max) % 2 == 0}"
     }
+
+    private fun randomUUID() = UUID.randomUUID().toString()
 }
