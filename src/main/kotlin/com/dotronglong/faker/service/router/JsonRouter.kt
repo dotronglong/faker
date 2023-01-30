@@ -117,7 +117,9 @@ class JsonRouter @Autowired constructor(
 
         val files = folder.listFiles()
         for (file in files!!) {
-            if (!parse(file)) {
+            if (file.isDirectory) {
+                scan(file.path)
+            } else if (!parse(file)) {
                 logger.warn("Unable to parse file {}", file.name)
             }
         }
@@ -136,8 +138,12 @@ class JsonRouter @Autowired constructor(
             return false
         }
 
-        this.specs.putIfAbsent(file.name, spec)
-        logger.info("Parsed file {}", file.name)
+        /**
+         * File.absolutePath property used instead of file.name for uniqueness,
+         * since filenames can be the same
+         */
+        this.specs.putIfAbsent(file.absolutePath, spec)
+        logger.info("Parsed file {}", file.absolutePath)
         return true
     }
 

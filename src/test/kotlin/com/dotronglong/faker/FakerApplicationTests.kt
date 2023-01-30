@@ -200,4 +200,18 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         // is cache working? speed x2 at least
         assertThat(lap1 - start).isGreaterThanOrEqualTo((lap2 - lap1) * 2)
     }
+
+    @Test
+    fun testResponseWithNestedFileLocation() {
+        mutableListOf<String>().apply {
+            add("/parent/child/nested")
+            add("/parent/nested")
+        }.forEach { path ->
+            val entity = restTemplate.getForEntity<Any>(path)
+            assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+            assertThat(entity.body is Map<*, *>).isTrue()
+            val body = (entity.body as Map<*, *>)
+            assertThat(body["nested"]).isEqualTo("OK")
+        }
+    }
 }

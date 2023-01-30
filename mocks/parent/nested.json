@@ -1,0 +1,13 @@
+{
+  "plugins": [],
+  "request": {
+    "method": "get",
+    "path": "/parent/nested"
+  },
+  "response": {
+    "statusCode": 200,
+    "body": {
+      "nested": "OK"
+    }
+  }
+}
