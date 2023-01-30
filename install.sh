@@ -62,7 +62,7 @@ fi
 check=$(echo $PATH | grep "${DIR_FAKER}")
 if [[ -z "${check}" ]]; then
   echo "Please add \$HOME/${DIR_FAKER} to PATH environment variable"
-  echo "export \$PATH=\$PATH:\$HOME/${DIR_FAKER}"
+  echo "export PATH=\$PATH:\$HOME/${DIR_FAKER}"
 fi
 
 # Success
