@@ -5,13 +5,14 @@ import com.dotronglong.faker.pojo.MutableResponse
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.springframework.http.server.reactive.ServerHttpRequest
 import reactor.core.publisher.Mono
 
 class DelayResponsePlugin : Plugin {
     override val name: String
         get() = "delay"
 
-    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
+    override fun run(request: ServerHttpRequest, response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
         return Mono.create { s ->
             val duration = (arguments?.get("duration") as Int?) ?: 0
             if (duration > 0) {

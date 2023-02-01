@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    {
+      "name": "request"
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "path": "/request/url"
+  },
+  "response": {
+    "body": {
+      "url": "#request:url#"
+    }
+  }
+}

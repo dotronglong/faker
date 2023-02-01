@@ -5,6 +5,7 @@ import com.dotronglong.faker.pojo.MutableResponse
 import com.dotronglong.faker.service.helper.JsonStringModifier
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.springframework.http.server.reactive.ServerHttpRequest
 import reactor.core.publisher.Mono
 
 class ListPlugin : Plugin {
@@ -23,7 +24,7 @@ class ListPlugin : Plugin {
     override val name: String
         get() = "list"
 
-    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
+    override fun run(request: ServerHttpRequest, response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
         return Mono.create { s ->
             if (response.body.isEmpty()) {
                 s.error(Exception("Body must not be empty"))
