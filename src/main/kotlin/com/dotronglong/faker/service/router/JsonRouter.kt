@@ -48,6 +48,14 @@ class JsonRouter @Autowired constructor(
             }
             if (properties.watch) {
                 watch(properties.source)
+
+                val rootFolder = File(properties.source)
+
+                rootFolder.walk().forEach {
+                    if (it.isDirectory) {
+                        watch(it.absolutePath)
+                    }
+                }
             }
         } else {
             logger.error("Source is not properly configured.")
@@ -118,9 +126,9 @@ class JsonRouter @Autowired constructor(
         val files = folder.listFiles()
         for (file in files!!) {
             if (file.isDirectory) {
-                scan(file.path)
+                scan(file.absolutePath)
             } else if (!parse(file)) {
-                logger.warn("Unable to parse file {}", file.name)
+                logger.warn("Unable to parse file {}", file.absolutePath)
             }
         }
         return true
@@ -128,7 +136,7 @@ class JsonRouter @Autowired constructor(
 
     private fun parse(file: File): Boolean {
         if (!isValid(file)) {
-            logger.warn("File {} is not valid", file.name)
+            logger.warn("File {} is not valid", file.absolutePath)
             return false
         }
 
@@ -152,7 +160,7 @@ class JsonRouter @Autowired constructor(
                 && file.exists()
                 && file.canRead()
                 && getFileExtension(file) == "json"
-                && !this.specs.containsKey(file.name)
+                && !this.specs.containsKey(file.absolutePath)
     }
 
     private fun getFileExtension(file: File): String {
@@ -177,20 +185,22 @@ class JsonRouter @Autowired constructor(
     }
 
     private fun watch(source: String) {
-        watcher.watch(source, BiConsumer { file: Path, kind: WatchEvent.Kind<*> ->
-            val fileName = file.fileName.toString()
+        watcher.watch(source, BiConsumer { filePath: Path, kind: WatchEvent.Kind<*> ->
+            val absolutePath = filePath.toAbsolutePath().toString()
+            val file = filePath.toAbsolutePath().toFile()
+
             when {
                 kind === ENTRY_MODIFY -> {
-                    logger.info("Changed on file {}", fileName)
-                    specs.remove(fileName)
-                    parse(file.toFile())
+                    logger.info("Changed on file {}", absolutePath)
+                    specs.remove(absolutePath)
+                    parse(file)
                 }
                 kind === ENTRY_DELETE -> {
-                    specs.remove(fileName)
-                    logger.info("Removed file {}", fileName)
+                    specs.remove(absolutePath)
+                    logger.info("Removed file {}", absolutePath)
                 }
                 kind === ENTRY_CREATE -> {
-                    parse(file.toFile())
+                    parse(file)
                 }
             }
         })
