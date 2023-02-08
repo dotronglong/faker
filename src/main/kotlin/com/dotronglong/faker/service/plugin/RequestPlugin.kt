@@ -23,7 +23,7 @@ class RequestPlugin : BasePlugin(), Plugin {
                         "query" -> {
                             val paramName = matcher.group("value")
                             val replace = request.queryParams.getFirst(paramName)
-                            response.body = response.body.replaceFirst(find, replace ?: paramName)
+                            response.body = response.body.replaceFirst(find, replace ?: find)
                         }
 
                         "url" -> {
@@ -39,7 +39,7 @@ class RequestPlugin : BasePlugin(), Plugin {
                         "headers" -> {
                             val headerName = matcher.group("value")
                             val replace = request.headers.getFirst(headerName)
-                            response.body = response.body.replaceFirst(find, replace ?: headerName)
+                            response.body = response.body.replaceFirst(find, replace ?: find)
                         }
                     }
                 }

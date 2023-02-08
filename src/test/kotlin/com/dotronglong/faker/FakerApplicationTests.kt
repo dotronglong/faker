@@ -223,7 +223,7 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         val body = (entity.body as Map<*, *>)
         assertThat(body["name"]).isEqualTo("John")
         assertThat(body["one-two"]).isEqualTo("value")
-        assertThat(body["not-found"]).isEqualTo("not-found")
+        assertThat(body["not-found"]).isEqualTo("#request:query:not-found#")
     }
 
     @Test
@@ -252,6 +252,6 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
         assertThat(entity.body is Map<*, *>).isTrue()
         val body = (entity.body as Map<*, *>)
         assertThat((body["accept"] as String).contains("application/json")).isTrue()
-        assertThat(body["not-found"]).isEqualTo("not-found")
+        assertThat(body["not-found"]).isEqualTo("#request:headers:not-found#")
     }
 }
