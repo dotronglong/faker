@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    {
+      "name": "request"
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "path": "/request/query?name=John&one-two=value"
+  },
+  "response": {
+    "body": {
+      "name": "#request:query:name#",
+      "one-two": "#request:query:one-two#",
+      "not-found": "#request:query:not-found#"
+    }
+  }
+}

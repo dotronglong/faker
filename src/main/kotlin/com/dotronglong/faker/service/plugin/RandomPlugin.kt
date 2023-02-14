@@ -4,6 +4,7 @@ import com.dotronglong.faker.contract.Plugin
 import com.dotronglong.faker.pojo.MutableResponse
 import com.dotronglong.faker.pojo.Names
 import com.dotronglong.faker.service.helper.JsonFileReader
+import org.springframework.http.server.reactive.ServerHttpRequest
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.UUID
@@ -21,9 +22,9 @@ class RandomPlugin : BasePlugin(), Plugin {
     override val name: String
         get() = "random"
 
-    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> = run(response)
+    override fun run(request: ServerHttpRequest, response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> = run(request, response)
 
-    override fun run(response: MutableResponse): Mono<Void> {
+    override fun run(request: ServerHttpRequest, response: MutableResponse): Mono<Void> {
         return Mono.create { s ->
             try {
                 val body = response.body

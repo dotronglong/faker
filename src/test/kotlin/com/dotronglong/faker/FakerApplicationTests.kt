@@ -214,4 +214,44 @@ class FakerApplicationTests(@Autowired val restTemplate: TestRestTemplate) {
             assertThat(body["nested"]).isEqualTo("OK")
         }
     }
+
+    @Test
+    fun testRequestQuery() {
+        val entity = restTemplate.getForEntity<Any>("/request/query?name=John&one-two=value")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+        val body = (entity.body as Map<*, *>)
+        assertThat(body["name"]).isEqualTo("John")
+        assertThat(body["one-two"]).isEqualTo("value")
+        assertThat(body["not-found"]).isEqualTo("#request:query:not-found#")
+    }
+
+    @Test
+    fun testRequestUrl() {
+        val entity = restTemplate.getForEntity<Any>("/request/url")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+        val body = (entity.body as Map<*, *>)
+        assertThat((body["url"] as String).startsWith("http://localhost")).isTrue()
+        assertThat((body["url"] as String).endsWith("/request/url")).isTrue()
+    }
+
+    @Test
+    fun testRequestPath() {
+        val entity = restTemplate.getForEntity<Any>("/request/path")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+        val body = (entity.body as Map<*, *>)
+        assertThat(body["path"]).isEqualTo("/request/path")
+    }
+
+    @Test
+    fun testRequestHeaders() {
+        val entity = restTemplate.getForEntity<Any>("/request/headers")
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(entity.body is Map<*, *>).isTrue()
+        val body = (entity.body as Map<*, *>)
+        assertThat((body["accept"] as String).contains("application/json")).isTrue()
+        assertThat(body["not-found"]).isEqualTo("#request:headers:not-found#")
+    }
 }

@@ -27,7 +27,8 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
                 RandomPlugin(),
                 TimestampPlugin(),
                 ListPlugin(),
-                CommandPlugin()
+                CommandPlugin(),
+                RequestPlugin()
         ).forEach { plugin -> plugins[plugin.name] = plugin }
     }
 
@@ -39,11 +40,11 @@ class JsonSpecHandler constructor(private val spec: Spec) : Handler {
             if (spec.plugins != null) {
                 for (plugin in spec.plugins) {
                     if (plugins.containsKey(plugin.name)) {
-                        tasks.add(plugins[plugin.name]!!.run(mutableResponse, plugin.args))
+                        tasks.add(plugins[plugin.name]!!.run(request, mutableResponse, plugin.args))
                     }
                 }
             }
-            val reply = JsonResponsePlugin(response).run(mutableResponse)
+            val reply = JsonResponsePlugin(response).run(request, mutableResponse)
             var completes = tasks.size
             if (completes > 0) {
                 val done = {

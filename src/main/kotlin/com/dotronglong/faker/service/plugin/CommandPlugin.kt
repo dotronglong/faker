@@ -5,6 +5,7 @@ import com.dotronglong.faker.pojo.MutableResponse
 import com.dotronglong.faker.service.helper.JsonStringModifier
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.springframework.http.server.reactive.ServerHttpRequest
 import reactor.core.publisher.Mono
 import java.io.BufferedReader
 import java.io.File
@@ -20,7 +21,7 @@ class CommandPlugin : Plugin {
     override val name: String
         get() = "command"
 
-    override fun run(response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
+    override fun run(request: ServerHttpRequest, response: MutableResponse, arguments: Map<String, Any>?): Mono<Void> {
         return Mono.create { s ->
             if (response.body.isEmpty()) {
                 s.error(Exception("Body must not be empty"))

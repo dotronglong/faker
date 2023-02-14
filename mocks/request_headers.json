@@ -1,0 +1,17 @@
+{
+  "plugins": [
+    {
+      "name": "request"
+    }
+  ],
+  "request": {
+    "method": "GET",
+    "path": "/request/headers"
+  },
+  "response": {
+    "body": {
+      "accept": "#request:headers:accept#",
+      "not-found": "#request:headers:not-found#"
+    }
+  }
+}
