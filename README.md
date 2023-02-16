@@ -1,5 +1,5 @@
 # Faker - Simple Fake API Server
-[![Build Status](https://travis-ci.org/dotronglong/faker.svg?branch=master)](https://travis-ci.org/dotronglong/faker)
+[![Run tests on PRs](https://github.com/dotronglong/faker/actions/workflows/main.yml/badge.svg)](https://github.com/dotronglong/faker/actions/workflows/main.yml)
 
 ## Installation
 
