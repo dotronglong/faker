@@ -66,7 +66,7 @@ class JsonRouter @Autowired constructor(
 
     override fun match(request: ServerHttpRequest): Handler? {
         for (spec: Spec in specs.values) {
-            if (!request.method!!.matches(spec.request.method.uppercase(Locale.getDefault()))) {
+            if (!request.method.matches(spec.request.method.uppercase(Locale.getDefault()))) {
                 continue
             }
 
