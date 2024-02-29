@@ -28,12 +28,10 @@ class CommandPlugin : Plugin {
                 return@create
             }
             try {
-                GlobalScope.launch {
-                    val commandPluginArguments = getCommandPluginArguments(arguments)
-                    val content = execute(commandPluginArguments)
-                    replace(response, commandPluginArguments, content)
-                    s.success()
-                }
+                val commandPluginArguments = getCommandPluginArguments(arguments)
+                val content = execute(commandPluginArguments)
+                replace(response, commandPluginArguments, content)
+                s.success()
             } catch (e: Exception) {
                 s.error(e)
             }

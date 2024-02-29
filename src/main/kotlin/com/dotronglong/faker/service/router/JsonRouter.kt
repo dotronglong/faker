@@ -23,6 +23,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds.*
 import java.nio.file.WatchEvent
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.BiConsumer
 import java.util.regex.Pattern
@@ -65,7 +66,7 @@ class JsonRouter @Autowired constructor(
 
     override fun match(request: ServerHttpRequest): Handler? {
         for (spec: Spec in specs.values) {
-            if (!request.method!!.matches(spec.request.method.toUpperCase())) {
+            if (!request.method.matches(spec.request.method.uppercase(Locale.getDefault()))) {
                 continue
             }
 

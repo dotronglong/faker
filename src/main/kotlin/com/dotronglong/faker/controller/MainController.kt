@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono
 class MainController @Autowired constructor(val router: Router) {
 
     @CrossOrigin(
-            origins = ["*"],
+            originPatterns = ["*"],
             methods = [
                 RequestMethod.GET,
                 RequestMethod.POST,
