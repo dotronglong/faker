@@ -27,6 +27,6 @@
   "homepage": "https://github.com/dotronglong/faker#readme",
   "dependencies": {
     "chalk": "^3.0.0",
-    "cli-progress": "^3.6.0"
+    "cli-progress": "^3.11.0"
   }
 }
